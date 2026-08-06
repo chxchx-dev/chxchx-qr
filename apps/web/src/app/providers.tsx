@@ -1,7 +1,15 @@
 import type { ReactNode } from "react";
+import { BrowserRouter } from "react-router-dom";
+import { AuthProvider } from "../features/auth/auth-context";
 import { ErrorBoundary } from "./ErrorBoundary";
 
-/** Proveedores globales de la app (hoy: error boundary; mañana: tema/i18n). */
+/** Proveedores globales de la app: router (Fase 07), sesión y errores. */
 export function Providers({ children }: { children: ReactNode }) {
-  return <ErrorBoundary>{children}</ErrorBoundary>;
+  return (
+    <ErrorBoundary>
+      <BrowserRouter>
+        <AuthProvider>{children}</AuthProvider>
+      </BrowserRouter>
+    </ErrorBoundary>
+  );
 }
