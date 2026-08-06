@@ -1,5 +1,9 @@
 # Fase 07 — Cuentas, Sesiones e Historial
 
+> Estado: **DONE** (2026-08-06). Detalle en `docs/execution/PHASE-07-REPORT.md`.
+> Decisión: el token interno (Fase 06) se eliminó; los QR existentes quedaron
+> anónimos. Navegación web con react-router-dom.
+
 ## Objetivo
 
 Asignar recursos a usuarios y ofrecer gestión segura.
@@ -145,9 +149,9 @@ Recursos previos deben:
 
 ## Puerta de salida
 
-- [ ] auth
-- [ ] sessions
-- [ ] ownership
-- [ ] history
-- [ ] isolation tests
-- [ ] reporte
+- [x] auth
+- [x] sessions
+- [x] ownership
+- [x] history
+- [x] isolation tests
+- [x] reporte

@@ -130,10 +130,19 @@ El QR generado contiene short URL, no destination URL.
 
 ## Puerta de salida
 
-- [ ] DB
-- [ ] migrations
-- [ ] create/update
-- [ ] redirect
-- [ ] concurrency
-- [ ] load smoke
-- [ ] reporte
+- [x] DB (PostgreSQL local + servicio en CI, ADR-004/006)
+- [x] migrations (0001-0003, up/down, advisory lock, transaccionales)
+- [x] create/update (idempotencia + If-Match/ETag, borrado suave)
+- [x] redirect (302 / 200 pausado / 410 / 404, headers seguros)
+- [x] concurrency (8 PATCHes paralelos → 1 ganador; slugs únicos)
+- [x] load smoke (smoke del binario: ready con `database: ok`, 302 real)
+- [x] reporte (`docs/execution/PHASE-06-REPORT.md`)
+
+## Decisiones aplicadas
+
+- auth de la Fase 06: token interno por env (`INTERNAL_API_TOKEN`, Bearer,
+  timing-safe; hash del token en auditoría); cuentas reales en la Fase 07;
+- slug criptográfico (alfabeto sin ambiguos, `DYNAMIC_SLUG_LENGTH`), usuario
+  no lo elige; reintento de colisión (constraint único);
+- expiración con transición perezosa `active→expired` (410) al resolver;
+- `tags` y analítica quedan para las Fases 07/08.
