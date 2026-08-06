@@ -1,0 +1,30 @@
+# Dependencias
+node_modules/
+**/node_modules/
+
+# Builds
+dist/
+**/dist/
+coverage/
+**/coverage/
+
+# Entorno (nunca subir secretos; mantener los ejemplos)
+.env
+.env.*
+!.env.example
+!**/.env.example
+
+# Sistema y editor
+.DS_Store
+*.log
+*.local
+.vscode/
+.idea/
+
+# Generados
+*.tsbuildinfo
+
+# Playwright (artefactos de E2E)
+apps/web/test-results/
+apps/web/playwright-report/
+apps/web/blob-report/

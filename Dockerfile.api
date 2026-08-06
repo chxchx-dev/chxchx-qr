@@ -1,0 +1,43 @@
+# acore-qr — API (multi-stage, usuario no root, healthcheck)
+# Nota: npm coloca dependencias de workspaces en node_modules anidados.
+# Por eso npm ci y el copiado de código se hacen en el MISMO stage: copiar
+# directorios encima de node_modules los pisaría (zod en packages/config).
+FROM node:24-alpine AS build
+WORKDIR /app
+# Manifests primero para cachear la capa de npm ci.
+COPY package.json package-lock.json ./
+COPY apps/api/package.json ./apps/api/package.json
+COPY apps/web/package.json ./apps/web/package.json
+COPY packages/contracts/package.json ./packages/contracts/package.json
+COPY packages/config/package.json ./packages/config/package.json
+COPY packages/qr-core/package.json ./packages/qr-core/package.json
+COPY packages/test-fixtures/package.json ./packages/test-fixtures/package.json
+RUN npm ci --ignore-scripts
+# Código fuente después: solo invalida la capa de compilación.
+COPY package.json tsconfig.base.json biome.json ./
+COPY apps/api ./apps/api
+COPY packages ./packages
+RUN npm run build:packages && npm run build -w apps/api
+
+FROM node:24-alpine AS runtime
+WORKDIR /app
+ENV NODE_ENV=production
+ENV PORT=4000
+COPY package.json package-lock.json ./
+COPY apps/api/package.json ./apps/api/package.json
+COPY apps/web/package.json ./apps/web/package.json
+COPY packages/contracts/package.json ./packages/contracts/package.json
+COPY packages/config/package.json ./packages/config/package.json
+COPY packages/qr-core/package.json ./packages/qr-core/package.json
+COPY packages/test-fixtures/package.json ./packages/test-fixtures/package.json
+RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
+COPY --from=build /app/apps/api/dist ./apps/api/dist
+COPY --from=build /app/packages/contracts/dist ./packages/contracts/dist
+COPY --from=build /app/packages/config/dist ./packages/config/dist
+COPY --from=build /app/packages/qr-core/dist ./packages/qr-core/dist
+COPY --from=build /app/packages/test-fixtures/dist ./packages/test-fixtures/dist
+USER node
+EXPOSE 4000
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+  CMD node -e "fetch('http://127.0.0.1:4000/health/live').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+CMD ["node", "apps/api/dist/server.js"]

@@ -1,0 +1,32 @@
+# acore-qr — Web (multi-stage, estático, usuario no root, healthcheck)
+# Mismo criterio que Dockerfile.api: npm ci y código en el mismo stage para
+# no pisar los node_modules anidados que crea npm en workspaces.
+FROM node:24-alpine AS build
+WORKDIR /app
+COPY package.json package-lock.json ./
+COPY apps/api/package.json ./apps/api/package.json
+COPY apps/web/package.json ./apps/web/package.json
+COPY packages/contracts/package.json ./packages/contracts/package.json
+COPY packages/config/package.json ./packages/config/package.json
+COPY packages/qr-core/package.json ./packages/qr-core/package.json
+COPY packages/test-fixtures/package.json ./packages/test-fixtures/package.json
+RUN npm ci --ignore-scripts
+COPY package.json tsconfig.base.json ./
+COPY apps/web ./apps/web
+COPY packages ./packages
+# El flag público de archivos se hornea en el build estático (Vite).
+ARG VITE_FILE_UPLOAD_ENABLED=true
+ENV VITE_FILE_UPLOAD_ENABLED=$VITE_FILE_UPLOAD_ENABLED
+RUN npm run build:packages && npm run build -w apps/web
+
+FROM node:24-alpine AS runtime
+WORKDIR /app
+ENV NODE_ENV=production
+ENV PORT=8080
+COPY --from=build /app/apps/web/dist ./dist
+COPY infra/docker/web/serve.mjs ./serve.mjs
+USER node
+EXPOSE 8080
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD node -e "fetch('http://127.0.0.1:8080/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+CMD ["node", "serve.mjs"]

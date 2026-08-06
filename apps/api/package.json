@@ -1,0 +1,32 @@
+{
+  "name": "@acore/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "API de acore-qr (Express 5). Health y base; endpoints QR en Fase 02.",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/server.js",
+    "typecheck": "npm run build && tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json",
+    "test": "npm run build && vitest run",
+    "test:integration": "npm run test",
+    "test:coverage": "npm run build && vitest run --coverage"
+  },
+  "dependencies": {
+    "@acore/config": "*",
+    "@acore/contracts": "*",
+    "@acore/qr-core": "*",
+    "express": "^5.1.0",
+    "multer": "^2.2.0",
+    "sharp": "^0.35.3",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/multer": "^2.2.0",
+    "@types/node": "^24.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.9.0"
+  }
+}

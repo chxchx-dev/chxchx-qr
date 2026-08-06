@@ -1,0 +1,40 @@
+@import "tailwindcss";
+@import "./tokens.css";
+
+@theme {
+  --color-background: var(--tone-bg);
+  --color-surface: var(--tone-surface);
+  --color-text: var(--tone-text);
+  --color-muted: var(--tone-muted);
+  --color-primary: var(--tone-primary);
+  --color-danger: var(--tone-danger);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  @media (prefers-color-scheme: light) {
+    :root {
+      color-scheme: light;
+    }
+  }
+
+  body {
+    @apply bg-background text-text antialiased;
+  }
+
+  /* Respetar prefers-reduced-motion (08 §7). */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
