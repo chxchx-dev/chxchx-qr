@@ -13,6 +13,7 @@ function routeParam(req: Request, name: string): string {
 }
 
 import { sendProblem } from "../../errors.js";
+import type { ScanRecorder } from "../analytics/scan-event.js";
 import { handleDynamicQrError } from "../dynamic-qrs/dynamic-qr.errors.js";
 import type { RedirectResolution } from "../dynamic-qrs/dynamic-qr.service.js";
 import { redirectHeaders } from "./redirect-cache-policy.js";
@@ -34,13 +35,19 @@ const PAUSED_PAGE = `<!doctype html>
 </body>
 </html>`;
 
-export function createRedirectController(service: {
-  resolve: (slug: string) => Promise<RedirectResolution>;
+export function createRedirectController(input: {
+  service: { resolve: (slug: string) => Promise<RedirectResolution> };
+  /** Recorder de analítica (Fase 08); sin él la redirección no registra nada. */
+  recorder?: ScanRecorder;
 }) {
+  const { service, recorder } = input;
   return {
     async redirect(req: Request, res: Response, next: NextFunction): Promise<void> {
       try {
         const resolution = await service.resolve(routeParam(req, "slug"));
+        // Analítica: evento no-bloqueante DESPUÉS de resolver (nunca antes).
+        // Un fallo de escritura no afecta la respuesta.
+        recorder?.record(req, res, resolution);
         if (resolution.kind === "ok") {
           res.status(302).set("Location", resolution.destinationUrl).set(redirectHeaders()).end();
           return;

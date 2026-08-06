@@ -34,6 +34,12 @@ describe("apiConfig", () => {
     expect(config.PASSWORD_SCRYPT_R).toBe(8);
     expect(config.PASSWORD_SCRYPT_P).toBe(1);
     expect(config.RATE_LIMIT_LOGIN_PER_15_MINUTES).toBe(10);
+    // Fase 08: analítica deshabilitada por defecto; retención y agregación con defaults.
+    expect(config.ANALYTICS_ENABLED).toBe(false);
+    expect(config.ANALYTICS_HMAC_SECRET_CURRENT).toBeUndefined();
+    expect(config.ANALYTICS_RAW_RETENTION_DAYS).toBe(90);
+    expect(config.ANALYTICS_AGGREGATION_INTERVAL_MINUTES).toBe(10);
+    expect(config.RATE_LIMIT_ABUSE_REPORT_PER_HOUR).toBe(10);
   });
 
   it("DYNAMIC_QR_ENABLED=true exige DATABASE_URL y SESSION_SECRET_CURRENT", () => {
@@ -58,6 +64,28 @@ describe("apiConfig", () => {
       /Configuración de API inválida/,
     );
     expect(() => apiConfig({ PASSWORD_SCRYPT_N: "10000" })).toThrow(
+      /Configuración de API inválida/,
+    );
+  });
+
+  it("ANALYTICS_ENABLED=true exige ANALYTICS_HMAC_SECRET_CURRENT", () => {
+    expect(() => apiConfig({ ANALYTICS_ENABLED: "true" })).toThrow(/ANALYTICS_HMAC_SECRET_CURRENT/);
+    expect(() => apiConfig({ ANALYTICS_HMAC_SECRET_CURRENT: "corto" })).toThrow(
+      /Configuración de API inválida/,
+    );
+    const ok = apiConfig({
+      ANALYTICS_ENABLED: "true",
+      ANALYTICS_HMAC_SECRET_CURRENT: "hmac-secreto-largo-0123456789abcdef0123456789",
+    });
+    expect(ok.ANALYTICS_ENABLED).toBe(true);
+    expect(ok.ANALYTICS_HMAC_SECRET_CURRENT).toBe("hmac-secreto-largo-0123456789abcdef0123456789");
+  });
+
+  it("rechaza retención de analítica fuera de rango", () => {
+    expect(() => apiConfig({ ANALYTICS_RAW_RETENTION_DAYS: "0" })).toThrow(
+      /Configuración de API inválida/,
+    );
+    expect(() => apiConfig({ ANALYTICS_RAW_RETENTION_DAYS: "400" })).toThrow(
       /Configuración de API inválida/,
     );
   });

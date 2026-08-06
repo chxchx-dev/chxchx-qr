@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Frontend de acore-qr (React + Vite + Tailwind 4). Generador en Fase 03.",
+  "description": "acore-qr web application (React, Vite, and Tailwind CSS).",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit -p tsconfig.json && vite build",

@@ -80,6 +80,20 @@ export const ErrorCodes = {
   AUTH_PASSWORD_WEAK: "AUTH_PASSWORD_WEAK",
   /** Límite de frecuencia de login/registro superado (429). */
   AUTH_RATE_LIMITED: "AUTH_RATE_LIMITED",
+  /** Analítica: rango o granularidad no soportados (422). */
+  ANL_INVALID_RANGE: "ANL_INVALID_RANGE",
+  /** Analítica: QR inexistente o ajeno (404, sin revelar existencia). */
+  ANL_NOT_FOUND: "ANL_NOT_FOUND",
+  /** Reporte de abuso: entrada que no cumple el esquema (400). */
+  ABUSE_SCHEMA_INVALID: "ABUSE_SCHEMA_INVALID",
+  /** Reporte de abuso: límite de frecuencia superado (429). */
+  ABUSE_RATE_LIMITED: "ABUSE_RATE_LIMITED",
+  /** Admin: se requieren permisos de administrador (403). */
+  ADM_FORBIDDEN: "ADM_FORBIDDEN",
+  /** Admin: recurso inexistente (404). */
+  ADM_NOT_FOUND: "ADM_NOT_FOUND",
+  /** Admin: entrada que no cumple el esquema (400). */
+  ADM_SCHEMA_INVALID: "ADM_SCHEMA_INVALID",
 } as const;
 
 export type ErrorCode = (typeof ErrorCodes)[keyof typeof ErrorCodes];

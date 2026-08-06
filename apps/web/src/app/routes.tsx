@@ -3,6 +3,8 @@
  * dashboard y el detalle/creación de QR dinámicos requieren sesión.
  */
 import { Route, Routes as RouterRoutes } from "react-router-dom";
+import { AdminDashboard } from "../features/admin/AdminDashboard";
+import { AnalyticsPage } from "../features/analytics/AnalyticsPage";
 import { LoginPage } from "../features/auth/LoginPage";
 import { RegisterPage } from "../features/auth/RegisterPage";
 import { RequireAuth } from "../features/auth/RequireAuth";
@@ -60,6 +62,22 @@ export function Routes() {
         element={
           <RequireAuth>
             <QrDetailPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/qr/:id/analytics"
+        element={
+          <RequireAuth>
+            <AnalyticsPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/admin"
+        element={
+          <RequireAuth>
+            <AdminDashboard />
           </RequireAuth>
         }
       />

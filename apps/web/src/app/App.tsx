@@ -47,6 +47,11 @@ function SiteHeader() {
               {ui.auth.dashboardNav}
             </Link>
           )}
+          {user !== null && (
+            <Link to="/admin" className="text-sm text-muted transition-colors hover:text-text">
+              {ui.admin.nav}
+            </Link>
+          )}
           {user === null ? (
             <>
               <Link

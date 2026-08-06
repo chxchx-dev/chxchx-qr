@@ -154,6 +154,29 @@ ANALYTICS_HMAC_SECRET_PREVIOUS=
 - `SHORT_DOMAIN` es la base de la URL que viaja en el QR (`{SHORT_DOMAIN}/r/{slug}`);
 - `REDIRECT_CACHE_TTL_SECONDS=0` desactiva la cache en memoria (tests).
 
+## 8b. Analítica (Fase 08)
+
+```dotenv
+ANALYTICS_ENABLED=false
+ANALYTICS_RAW_RETENTION_DAYS=90
+ANALYTICS_HMAC_SECRET_CURRENT=
+ANALYTICS_HMAC_SECRET_PREVIOUS=
+ANALYTICS_AGGREGATION_INTERVAL_MINUTES=10
+RATE_LIMIT_ABUSE_REPORT_PER_HOUR=10
+```
+
+- `ANALYTICS_HMAC_SECRET_CURRENT` es **obligatoria** si `ANALYTICS_ENABLED=true`
+  (mín. 32 caracteres): firma del hash diario del visitante
+  (`HMAC(secreto, día|ip|ua)`); `PREVIOUS` habilita rotación sin perder el
+  histórico (mismo patrón que sesiones, §12);
+- el registro de eventos es **no-bloqueante**: un fallo de analítica jamás
+  rompe la redirección (el evento se omite y se registra un warning);
+- `ANALYTICS_RAW_RETENTION_DAYS` rige la purga de `scan_events` (job de
+  agregación, patrón `file-cleanup`); los agregados (`scan_aggregates`) son
+  compactos y no se purgan en MVP;
+- `RATE_LIMIT_ABUSE_REPORT_PER_HOUR` limita el endpoint público de reporte de
+  abuso (por IP y hora).
+
 ## 9. Web
 
 Solo variables públicas con prefijo:

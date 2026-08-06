@@ -3,6 +3,7 @@ import { createApp } from "./app.js";
 import { migrateDatabase } from "./infrastructure/database/migration-runner.js";
 import { createDatabase, type Database } from "./infrastructure/database/pool.js";
 import { createFileStorage } from "./infrastructure/storage/storage-factory.js";
+import { startAggregationJob } from "./modules/analytics/aggregation.job.js";
 import { startFileCleanupJob } from "./modules/files/file-cleanup.js";
 
 const SHUTDOWN_TIMEOUT_MS = 10_000;
@@ -32,6 +33,16 @@ const fileCleanupJob = startFileCleanupJob({
   intervalMs: config.FILE_CLEANUP_INTERVAL_MINUTES * 60_000,
 });
 
+// Agregación de analítica + purga por retención (Fase 08): solo con analítica.
+const aggregationJob =
+  database !== undefined && config.ANALYTICS_ENABLED
+    ? startAggregationJob({
+        pool: database.pool,
+        intervalMs: config.ANALYTICS_AGGREGATION_INTERVAL_MINUTES * 60_000,
+        retentionDays: config.ANALYTICS_RAW_RETENTION_DAYS,
+      })
+    : undefined;
+
 const server = app.listen(config.PORT, () => {
   console.log(
     `[qr-api] escuchando en :${config.PORT} (env=${config.NODE_ENV}, v${config.APP_VERSION})`,
@@ -47,6 +58,7 @@ function shutdown(signal: NodeJS.Signals): void {
   shuttingDown = true;
   console.log(`[qr-api] señal ${signal} recibida; apagado graceful`);
   fileCleanupJob.stop();
+  aggregationJob?.stop();
 
   const forceExit = setTimeout(() => {
     console.error("[qr-api] apagado graceful agotado; forzando salida");

@@ -432,19 +432,29 @@ Respuesta:
 }
 ```
 
-## 12. Analítica
+## 12. Analítica (Fase 08)
 
 ### `GET /api/v1/dynamic-qrs/{id}/analytics`
+
+Requiere sesión y ser el propietario del QR (`404 ANL_NOT_FOUND` si ajeno o
+inexistente, sin revelar existencia). Solo se expone si `ANALYTICS_ENABLED=true`
+(si no, la ruta no existe → 404 genérico).
 
 Parámetros:
 
 ```text
-from
-to
-granularity=hour|day|week
+from   ISO 8601 UTC (opcional; defecto: to - 30 días)
+to     ISO 8601 UTC (opcional; defecto: ahora)
+granularity=hour|day|week (opcional; defecto: day)
 ```
 
-Respuesta:
+Reglas de rango:
+
+- máximo 90 días (`422 ANL_INVALID_RANGE` si se excede);
+- `from` > `to` → `422 ANL_INVALID_RANGE`;
+- `granularity=hour` solo para rangos ≤ 48 h → si no, `422 ANL_INVALID_RANGE`.
+
+Respuesta `200`:
 
 ```json
 {
@@ -456,13 +466,65 @@ Respuesta:
     "scans": 1250,
     "estimatedUnique": 860
   },
-  "series": [],
-  "devices": [],
-  "countries": []
+  "series": [
+    { "bucket": "2026-08-01", "scans": 250 },
+    { "bucket": "2026-08-02", "scans": 300 }
+  ],
+  "devices": [
+    { "family": "mobile", "scans": 700 },
+    { "family": "bot", "scans": 120 }
+  ]
 }
 ```
 
-La geolocalización es opcional y no forma parte del núcleo.
+- `bucket` es fecha ISO (`YYYY-MM-DD` para day/week, `YYYY-MM-DDTHH:00:00Z` para
+  hour); el timezone de presentación lo aplica el cliente (UTC interno);
+- `estimatedUnique` es la **suma de únicos diarios** (el hash del visitante rota
+  a diario → no es identidad real); la UI muestra un disclaimer;
+- los bots se aíslan en la familia `bot` (sin hash de visitante);
+- `countries` no se devuelve (columna inactiva; geolocalización fuera de
+  alcance);
+- datos privados del propietario: `Cache-Control: no-store`.
+
+## 12b. Administración y reportes de abuso (Fase 08)
+
+### `POST /api/v1/abuse-reports` — público
+
+Reporta un QR por slug **sin sesión** (rate limit por IP/hora:
+`RATE_LIMIT_ABUSE_REPORT_PER_HOUR` → `429 ABUSE_RATE_LIMITED`).
+
+```json
+{
+  "slug": "aB9kP2XqLz",
+  "reason": "El destino muestra contenido engañoso"
+}
+```
+
+- `reason` de 10 a 500 caracteres; inválido → `400 ABUSE_SCHEMA_INVALID`;
+- slug inexistente o borrado → `404 ADM_NOT_FOUND` (bloqueado/expirado sí
+  reportable);
+- `201` con el reporte (`status: "open"`); la IP del reportero solo se guarda
+  hasheada.
+
+### Endpoints de admin (rol en `admin_roles`, bootstrap por SQL manual)
+
+Sin rol → `403 ADM_FORBIDDEN`. Mutaciones con sesión + rol + `Origin` (CSRF).
+
+```text
+GET  /api/v1/admin/abuse-reports?page&pageSize&status=open|resolved|dismissed
+POST /api/v1/admin/abuse-reports/{id}/resolve   → 204 (auditado)
+POST /api/v1/admin/abuse-reports/{id}/dismiss   → 204 (auditado)
+POST /api/v1/admin/qrs/{id}/block               → 204 { reason } (deja de redirigir)
+POST /api/v1/admin/qrs/{id}/unblock             → 204 { reason } (vuelve a active)
+POST /api/v1/admin/users/{id}/block             → 204 { reason } (revoca sesiones)
+POST /api/v1/admin/users/{id}/unblock           → 204 { reason }
+```
+
+Todas las acciones de moderación se registran en `audit_events` con
+`actor_user_id`, `action` (`admin.block_qr`, `admin.unblock_qr`,
+`admin.block_user`, `admin.unblock_user`, `admin.resolve_report`,
+`admin.dismiss_report`) y el motivo en `metadata_json`. Recurso inexistente →
+`404 ADM_NOT_FOUND`; cuerpo sin `reason` → `400 ADM_SCHEMA_INVALID`.
 
 ## 13. Sesión (Fase 07, ADR-005)
 
@@ -562,6 +624,13 @@ Códigos de error QR (cuerpo `application/problem+json`, campo `code`):
 | `AUTH_ORIGIN_FORBIDDEN` | 403 | Origin no permitido en una mutación (CSRF) |
 | `AUTH_PASSWORD_WEAK` | 422 | contraseña actual incorrecta al cambiarla |
 | `AUTH_RATE_LIMITED` | 429 | límite de login/registro superado |
+| `ANL_INVALID_RANGE` | 422 | rango o granularidad de analítica no soportados |
+| `ANL_NOT_FOUND` | 404 | QR ajeno o inexistente en analítica |
+| `ABUSE_SCHEMA_INVALID` | 400 | reporte de abuso que no cumple el esquema |
+| `ABUSE_RATE_LIMITED` | 429 | límite de reportes de abuso superado |
+| `ADM_FORBIDDEN` | 403 | se requieren permisos de administrador |
+| `ADM_NOT_FOUND` | 404 | recurso de administración inexistente |
+| `ADM_SCHEMA_INVALID` | 400 | acción de moderación inválida |
 
 ## 15. Compatibilidad
 

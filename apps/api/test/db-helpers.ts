@@ -31,6 +31,11 @@ export function dynamicQrTestEnv(databaseUrl: string): Record<string, string> {
     RATE_LIMIT_DQR_READ_PER_MINUTE: "1000",
     RATE_LIMIT_REDIRECT_PER_MINUTE: "1000",
     RATE_LIMIT_LOGIN_PER_15_MINUTES: "1000",
+    // Fase 08: analítica activa en los tests de suites dinámicas (HMAC de test).
+    ANALYTICS_ENABLED: "true",
+    ANALYTICS_HMAC_SECRET_CURRENT: "hmac-secreto-test-0123456789abcdef0123456789",
+    ANALYTICS_RAW_RETENTION_DAYS: "90",
+    RATE_LIMIT_ABUSE_REPORT_PER_HOUR: "1000",
   };
 }
 
@@ -84,11 +89,27 @@ export async function ensureTestDb(target: string): Promise<Database> {
   return database;
 }
 
-/** Vacía las tablas entre tests (CASCADE cubre las FKs de users). */
+const RESET_SQL =
+  "TRUNCATE users, sessions, dynamic_qrs, idempotency_keys, audit_events, " +
+  "scan_events, scan_aggregates, abuse_reports, admin_roles CASCADE";
+
+/**
+ * Vacía las tablas entre tests (CASCADE cubre las FKs de users). TRUNCATE puede
+ * colisionar con inserts asíncronos que aún vuelan (p. ej. el recorder de
+ * analítica del test anterior): ante deadlock (40P01) se reintenta brevemente.
+ */
 export async function resetTestDb(database: Database): Promise<void> {
-  await database.pool.query(
-    "TRUNCATE users, sessions, dynamic_qrs, idempotency_keys, audit_events CASCADE",
-  );
+  for (let attempt = 1; attempt <= 4; attempt += 1) {
+    try {
+      await database.pool.query(RESET_SQL);
+      return;
+    } catch (error) {
+      if ((error as { code?: string }).code !== "40P01" || attempt === 4) {
+        throw error;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 100 * attempt));
+    }
+  }
 }
 
 /** Pool compartido por los tests (misma DB de test). */

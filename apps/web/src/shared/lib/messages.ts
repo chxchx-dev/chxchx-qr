@@ -1,11 +1,11 @@
 /**
- * Strings de la interfaz, centralizadas en un solo sitio (español, MVP).
- * Preparadas para i18n es/en en una fase posterior: nada de texto en JSX.
+ * Centralized UI strings. Keeping copy in one module makes the interface
+ * consistent and provides a clean boundary for future localization.
  */
 
 export const ui = {
   appName: "acore-qr",
-  langLabel: "es",
+  langLabel: "en",
   header: {
     tagline: "Genera códigos QR fiables",
     description:
@@ -299,5 +299,59 @@ export const ui = {
     disabledTitle: "QR dinámicos desactivados",
     disabledDescription: "Este despliegue no tiene el módulo de QR dinámicos habilitado.",
     home: "Inicio",
+    analytics: "Analítica",
+  },
+  analytics: {
+    title: "Analítica",
+    description: "Escaneos de este QR en el periodo seleccionado.",
+    back: "Volver al QR",
+    scans: "Escaneos",
+    estimatedUnique: "Únicos estimados",
+    disclaimer: "Los únicos son estimados: el hash del visitante rota cada día.",
+    rangeLabel: "Periodo",
+    granularityLabel: "Granularidad",
+    granularity: {
+      hour: "Hora",
+      day: "Día",
+      week: "Semana",
+    } as const,
+    days7: "7 días",
+    days30: "30 días",
+    days90: "90 días",
+    noData: "Sin escaneos en el periodo.",
+    series: "Evolución",
+    devices: "Dispositivos",
+    loadFailed: "No se pudo cargar la analítica.",
+    genericError: "Algo salió mal. Inténtalo de nuevo.",
+  },
+  admin: {
+    nav: "Admin",
+    title: "Panel de administración",
+    description: "Moderación de abuso y estado de cuentas.",
+    deniedTitle: "Acceso denegado",
+    deniedDescription: "Se requieren permisos de administrador.",
+    reports: "Reportes de abuso",
+    reportEmpty: "No hay reportes en la cola.",
+    status: {
+      open: "Abierto",
+      resolved: "Resuelto",
+      dismissed: "Descartado",
+    } as const,
+    resolve: "Resolver",
+    dismiss: "Descartar",
+    blockQrTitle: "Bloquear QR",
+    qrIdLabel: "ID del QR",
+    reasonLabel: "Motivo",
+    reasonPlaceholder: "P. ej. phishing confirmado…",
+    blockQr: "Bloquear",
+    unblockQr: "Desbloquear",
+    userTitle: "Estado de usuario",
+    userIdLabel: "ID del usuario",
+    blockUser: "Bloquear usuario",
+    unblockUser: "Desbloquear usuario",
+    blocked: "Acción aplicada.",
+    loadFailed: "No se pudo cargar la cola de reportes.",
+    actionFailed: "La acción no se pudo completar.",
+    genericError: "Algo salió mal. Inténtalo de nuevo.",
   },
 } as const;

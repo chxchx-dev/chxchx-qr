@@ -2,6 +2,29 @@
  * Contratos compartidos entre apps y paquetes (Fase 02):
  * esquemas Zod, DTOs y códigos de error de los endpoints QR.
  */
+
+export {
+  ABUSE_REPORT_LIMITS,
+  type AbuseReportInput,
+  type AbuseReportListResponse,
+  type AbuseReportResponse,
+  type AbuseReportStatus,
+  type AdminActionInput,
+  abuseReportListResponseSchema,
+  abuseReportResponseSchema,
+  abuseReportSchema,
+  abuseReportStatusSchema,
+  adminActionSchema,
+} from "./admin.schema.js";
+export {
+  ANALYTICS_LIMITS,
+  type AnalyticsGranularity,
+  type AnalyticsQuery,
+  type AnalyticsResponse,
+  analyticsGranularitySchema,
+  analyticsQuerySchema,
+  analyticsResponseSchema,
+} from "./analytics.schema.js";
 export {
   AUTH_LIMITS,
   type AuthResponse,

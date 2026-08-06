@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Generador profesional de códigos QR: monorepo con apps (web, api) y paquetes compartidos.",
+  "description": "Professional QR code generation platform: a monorepo with web, API, and shared packages.",
   "workspaces": [
     "apps/*",
     "packages/*"

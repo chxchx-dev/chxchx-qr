@@ -4,6 +4,8 @@ import express, { type Express } from "express";
 import { createCorsMiddleware } from "./cors.js";
 import { createErrorHandler, notFoundHandler } from "./errors.js";
 import { createDatabase, type Database } from "./infrastructure/database/pool.js";
+import { createAbuseReportRouter, createAdminRouter } from "./modules/admin/admin.routes.js";
+import { createAnalyticsModule } from "./modules/analytics/analytics.routes.js";
 import { createAuthModule } from "./modules/auth/auth.routes.js";
 import { createDynamicQrRouter } from "./modules/dynamic-qrs/dynamic-qr.routes.js";
 import { createFileDownloadRouter, createFilesRouter } from "./modules/files/files.routes.js";
@@ -64,10 +66,21 @@ export function createApp(config: ApiConfig, deps: AppDeps = {}): Express {
     const auth = createAuthModule(config, database);
     app.use("/api/v1/auth", auth.router);
     app.use("/api/v1/users", createUsersRouter(database, auth));
+    // Analítica (Fase 08): solo si habilitada; el HMAC es obligatorio entonces
+    // (fallo temprano en createAnalyticsModule).
+    const analytics = config.ANALYTICS_ENABLED
+      ? createAnalyticsModule(config, database)
+      : undefined;
     // QR dinámicos (Fase 06 + ownership Fase 07): sesión + Origin.
-    app.use("/api/v1/dynamic-qrs", createDynamicQrRouter(config, database, auth));
+    app.use(
+      "/api/v1/dynamic-qrs",
+      createDynamicQrRouter(config, database, auth, analytics?.service),
+    );
     // Redirección pública (ADR-003-style): https://.../r/{slug}.
-    app.use("/r", createRedirectRouter(config, database));
+    app.use("/r", createRedirectRouter(config, database, analytics?.recorder));
+    // Administración (Fase 08): reporte público de abuso + gestión con rol.
+    app.use("/api/v1/abuse-reports", createAbuseReportRouter(config, database));
+    app.use("/api/v1/admin", createAdminRouter(config, database, auth));
   }
 
   app.use(notFoundHandler);

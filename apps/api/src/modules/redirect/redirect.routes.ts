@@ -6,6 +6,7 @@ import type { ApiConfig } from "@acore/config";
 import { ErrorCodes } from "@acore/contracts";
 import { type Request, Router } from "express";
 import type { Database } from "../../infrastructure/database/pool.js";
+import type { ScanRecorder } from "../analytics/scan-event.js";
 import { createDynamicQrService } from "../dynamic-qrs/dynamic-qr.service.js";
 import { createRateLimiter, type RateLimitOptions } from "../qr/qr-render-limits.js";
 import { createRedirectController } from "./redirect.controller.js";
@@ -22,7 +23,11 @@ function clientKey(config: ApiConfig): RateLimitOptions["getKey"] {
   };
 }
 
-export function createRedirectRouter(config: ApiConfig, database: Database): Router {
+export function createRedirectRouter(
+  config: ApiConfig,
+  database: Database,
+  recorder?: ScanRecorder,
+): Router {
   const router = Router();
   const dynamicQrs = createDynamicQrService({
     pool: database.pool,
@@ -33,7 +38,10 @@ export function createRedirectRouter(config: ApiConfig, database: Database): Rou
     dynamicQrs,
     createRedirectCache(config.REDIRECT_CACHE_TTL_SECONDS),
   );
-  const controller = createRedirectController(service);
+  // exactOptionalPropertyTypes: solo se pasa `recorder` cuando existe.
+  const controller = createRedirectController(
+    recorder !== undefined ? { service, recorder } : { service },
+  );
 
   router.get(
     "/:slug",

@@ -186,7 +186,14 @@ export function QrDetailPage() {
       />
 
       {!isCreate && qr !== undefined && (
-        <div className="border-t border-surface pt-4">
+        <div className="flex flex-wrap items-center gap-2 border-t border-surface pt-4">
+          <button
+            type="button"
+            className="rounded-md border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+            onClick={() => navigate(`/qr/${encodeURIComponent(qr.id)}/analytics`)}
+          >
+            {ui.dashboard.analytics}
+          </button>
           <button
             type="button"
             className="rounded-md border border-danger/30 bg-danger/10 px-3 py-1.5 text-xs font-medium text-danger transition-colors hover:bg-danger/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-danger/40"

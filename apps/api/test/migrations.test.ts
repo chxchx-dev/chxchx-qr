@@ -44,10 +44,14 @@ const MIGRATION_NAMES = [
   "create_users",
   "create_sessions",
   "assign_dynamic_qr_owner",
+  "create_scan_events",
+  "create_scan_aggregates",
+  "create_abuse_reports",
+  "create_admin_roles",
 ] as const;
 
 describe("migraciones (up/down)", () => {
-  it("aplica las 6 migraciones sobre la DB (runner de producción)", async () => {
+  it("aplica las 10 migraciones sobre la DB (runner de producción)", async () => {
     for (const name of MIGRATION_NAMES) {
       const version = await migrationVersion(name);
       expect(version, `migración ${name} aplicada`).toBeDefined();
@@ -57,6 +61,10 @@ describe("migraciones (up/down)", () => {
     expect(await tableExists("audit_events")).toBe(true);
     expect(await tableExists("users")).toBe(true);
     expect(await tableExists("sessions")).toBe(true);
+    expect(await tableExists("scan_events")).toBe(true);
+    expect(await tableExists("scan_aggregates")).toBe(true);
+    expect(await tableExists("abuse_reports")).toBe(true);
+    expect(await tableExists("admin_roles")).toBe(true);
     expect(await tableExists("schema_migrations")).toBe(true);
   });
 
@@ -67,21 +75,14 @@ describe("migraciones (up/down)", () => {
 
   it("down revierte la última migración y up la vuelve a aplicar", async () => {
     const down = await runMigrations(database.pool, { direction: "down", step: 1 });
-    expect(down.reverted).toEqual(["0006_assign_dynamic_qr_owner"]);
-    // La 0006 es reversible: vuelve a la forma de la Fase 06.
-    const column = await database.pool.query(
-      `
-        SELECT data_type FROM information_schema.columns
-        WHERE table_schema = 'public' AND table_name = 'dynamic_qrs' AND column_name = 'owner_user_id'
-      `,
-    );
-    expect(column.rows[0]?.data_type).toBe("uuid");
-    // Las anteriores permanecen.
+    expect(down.reverted).toEqual(["0010_create_admin_roles"]);
+    // La 0010 es reversible; las anteriores permanecen.
+    expect(await tableExists("admin_roles")).toBe(false);
+    expect(await tableExists("scan_events")).toBe(true);
     expect(await tableExists("users")).toBe(true);
-    expect(await tableExists("sessions")).toBe(true);
 
     const up = await runMigrations(database.pool, { direction: "up" });
-    expect(up.applied).toEqual(["0006_assign_dynamic_qr_owner"]);
-    expect(await tableExists("users")).toBe(true);
+    expect(up.applied).toEqual(["0010_create_admin_roles"]);
+    expect(await tableExists("admin_roles")).toBe(true);
   });
 });

@@ -8,6 +8,8 @@ import type { ApiConfig } from "@acore/config";
 import { ErrorCodes } from "@acore/contracts";
 import { type Request, Router } from "express";
 import type { Database } from "../../infrastructure/database/pool.js";
+import { createAnalyticsController } from "../analytics/analytics.controller.js";
+import type { AnalyticsService } from "../analytics/analytics.service.js";
 import type { AuthModule } from "../auth/auth.routes.js";
 import { createRateLimiter, type RateLimitOptions } from "../qr/qr-render-limits.js";
 import { createDynamicQrController } from "./dynamic-qr.controller.js";
@@ -27,6 +29,7 @@ export function createDynamicQrRouter(
   config: ApiConfig,
   database: Database,
   auth: Pick<AuthModule, "requireAuth" | "verifyOrigin">,
+  analytics?: AnalyticsService,
 ): Router {
   const router = Router();
   const service = createDynamicQrService({
@@ -53,6 +56,11 @@ export function createDynamicQrRouter(
   // Mutaciones: sesión + Origin (CSRF). Lecturas: solo sesión.
   router.post("/", createLimiter, auth.requireAuth, auth.verifyOrigin, controller.create);
   router.get("/", readLimiter, auth.requireAuth, controller.list);
+  // Analítica (Fase 08): solo expuesta si el módulo está habilitado.
+  if (analytics !== undefined) {
+    const analyticsController = createAnalyticsController(analytics);
+    router.get("/:id/analytics", readLimiter, auth.requireAuth, analyticsController.get);
+  }
   router.get("/:id", readLimiter, auth.requireAuth, controller.get);
   router.post(
     "/:id/duplicate",

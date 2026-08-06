@@ -60,6 +60,10 @@
 | Fuerza bruta en login/registro | Alta | Alta | scrypt + rate limit + 401 genérico |
 | Robo/fijación de sesión | Media | Crítico | cookie HttpOnly + rotación + hash en DB |
 | CSRF en mutaciones | Media | Alta | Origin check + SameSite |
+| Privacidad de analítica (IP/UA) | Media | Alta | hash diario HMAC + retención + nunca IP/UA crudos |
+| Inflación de bots en métricas | Alta | Media | bot-policy + familia 'bot' separada |
+| Analítica degrada la redirección | Media | Crítico | evento no-bloqueante + test dedicado |
+| Abuso del reporte público | Media | Media | rate limit por IP + motivo mínimo |
 | Dependencia vulnerable | Media | Alta | audit + pin + updates |
 | Costos de storage | Media | Media | TTL + límites |
 | Privacidad excesiva | Media | Alta | hashes rotativos |

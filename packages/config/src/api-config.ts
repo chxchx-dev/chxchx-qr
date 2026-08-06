@@ -111,6 +111,23 @@ export const apiConfigSchema = z.object({
   RATE_LIMIT_DQR_CREATE_PER_MINUTE: envInteger.default(20),
   RATE_LIMIT_DQR_READ_PER_MINUTE: envInteger.default(60),
   RATE_LIMIT_REDIRECT_PER_MINUTE: envInteger.default(600),
+  // Analítica (Fase 08, docs/07 §15): eventos por redirect; el HMAC es
+  // obligatorio con ANALYTICS_ENABLED=true (hash diario del visitante).
+  ANALYTICS_ENABLED: envBoolean.default(false),
+  ANALYTICS_RAW_RETENTION_DAYS: envInteger
+    .refine((days) => days >= 1 && days <= 365, {
+      message: "debe estar entre 1 y 365",
+    })
+    .default(90),
+  ANALYTICS_HMAC_SECRET_CURRENT: z.string().min(32).optional(),
+  ANALYTICS_HMAC_SECRET_PREVIOUS: z.string().min(32).optional(),
+  ANALYTICS_AGGREGATION_INTERVAL_MINUTES: envInteger
+    .refine((minutes) => minutes >= 1, { message: "debe ser mayor que 0" })
+    .default(10),
+  // Reporte público de abuso (Fase 08): por hora y por IP.
+  RATE_LIMIT_ABUSE_REPORT_PER_HOUR: envInteger
+    .refine((limit) => limit > 0, { message: "debe ser mayor que 0" })
+    .default(10),
 });
 
 export type ApiConfig = z.infer<typeof apiConfigSchema>;
@@ -140,6 +157,16 @@ export function apiConfig(env: Record<string, string | undefined> = process.env)
     if (missing.length > 0) {
       throw new Error(
         `Configuración de API inválida: DYNAMIC_QR_ENABLED=true requiere ${missing.join(", ")}`,
+      );
+    }
+  }
+  if (config.ANALYTICS_ENABLED) {
+    if (
+      config.ANALYTICS_HMAC_SECRET_CURRENT === undefined ||
+      config.ANALYTICS_HMAC_SECRET_CURRENT === ""
+    ) {
+      throw new Error(
+        "Configuración de API inválida: ANALYTICS_ENABLED=true requiere ANALYTICS_HMAC_SECRET_CURRENT (mín. 32 caracteres)",
       );
     }
   }

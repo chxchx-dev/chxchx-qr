@@ -14,6 +14,8 @@ dqr_...
 fil_...
 ses_...
 evt_...
+scn_...
+rep_...
 ```
 
 Implementación:
@@ -139,30 +141,68 @@ deleted
 expired
 ```
 
-### `scan_events`
+### `scan_events` (Fase 08)
 
 ```text
 id
-dynamic_qr_id
-occurred_at
-day_bucket
-visitor_hash
-ip_prefix_hash
-user_agent_family
-device_family
-os_family
-country_code nullable
-referrer_domain nullable
+dynamic_qr_id (qr_id)
+scanned_at
+visitor_hash nullable (NULL en bots)
 is_bot
+device_family
+referrer_domain nullable
+country nullable (inactivo: siempre NULL, sin geolocalización)
 request_id
+created_at
 ```
 
 No almacenar:
 
-- IP completa permanente;
-- user-agent bruto indefinidamente;
+- IP completa permanente (solo dentro del HMAC del `visitor_hash`);
+- user-agent bruto indefinidamente (solo dentro del HMAC del `visitor_hash`);
 - fingerprint invasivo;
 - coordenadas precisas.
+
+### `scan_aggregates` (Fase 08)
+
+```text
+dynamic_qr_id (qr_id)
+day
+device_family
+total
+unique_visitors
+updated_at
+```
+
+PK compuesta `(qr_id, day, device_family)`. El job de agregación compacta
+`scan_events` con upsert idempotente; `unique_visitors` es el recuento de
+hashes distintos del día.
+
+### `abuse_reports` (Fase 08)
+
+```text
+id
+dynamic_qr_id (qr_id, nullable)
+slug
+reason
+status (open | resolved | dismissed)
+reporter_ip_hash (nunca la IP completa)
+request_id
+created_at
+updated_at
+resolved_at
+resolved_by
+```
+
+### `admin_roles` (Fase 08)
+
+```text
+user_id (PK, FK a users)
+created_at
+created_by
+```
+
+Bootstrap por SQL manual (decisión de la fase); sin endpoint de promoción.
 
 ### `audit_events`
 
@@ -198,8 +238,11 @@ created_at
 users 1---N sessions
 users 1---N dynamic_qrs
 users 1---N files
+users 0..1---1 admin_roles
 dynamic_qrs N---N qr_tags
 dynamic_qrs 1---N scan_events
+dynamic_qrs 1---N scan_aggregates
+dynamic_qrs 0..1---N abuse_reports (ON DELETE SET NULL)
 ```
 
 ## 5. Retención
@@ -210,8 +253,8 @@ Valores iniciales recomendados:
 |---|---|
 | Sesión revocada | 30 días |
 | Idempotency key | 24 horas |
-| Evento crudo de escaneo | 90 días |
-| Agregado diario | 24 meses |
+| Evento crudo de escaneo | 90 días (`ANALYTICS_RAW_RETENTION_DAYS`, job de purga) |
+| Agregado diario | sin purga en MVP (compacto; política futura al crecer) |
 | Archivo anónimo | 7 días |
 | Auditoría de seguridad | 12 meses |
 | Logs de aplicación | 30 días |
@@ -222,17 +265,19 @@ Los valores deben ser configurables y compatibles con la política legal del des
 
 No prometer “persona única”.
 
-Usar:
+Usar (implementación Fase 08):
 
 ```text
-visitor_hash = HMAC(rotating_daily_secret, truncated_ip + ua_family)
+visitor_hash = HMAC(ANALYTICS_HMAC_SECRET_CURRENT, `${day} | ${ip} | ${user_agent}`)
 ```
 
 Características:
 
-- rota diariamente;
-- reduce seguimiento prolongado;
-- permite estimación diaria;
+- rota diariamente (el `day` va en el mensaje: mismo visitante → hash distinto
+  al día siguiente);
+- IP y UA solo entran al HMAC; nunca se persisten;
+- los bots se registran en familia `bot` y sin `visitor_hash`;
+- permite estimación diaria (el "único" de un rango = suma de únicos diarios);
 - no es identidad real.
 
 ## 7. Slug
@@ -260,12 +305,19 @@ apps/api/src/infrastructure/database/migrations/
   0004_create_users.sql
   0005_create_sessions.sql
   0006_assign_dynamic_qr_owner.sql
+  0007_create_scan_events.sql
+  0008_create_scan_aggregates.sql
+  0009_create_abuse_reports.sql
+  0010_create_admin_roles.sql
 ```
 
 `0006` introduce el ownership: `owner_user_id` (text, FK a `users`) en
 `dynamic_qrs` e `idempotency_keys` (única por `(owner_user_id, key_hash)`),
 `actor_user_id` en `audit_events`. Las filas previas quedan anónimas (`NULL`):
 siguen redirigiendo pero no se gestionan desde el dashboard.
+
+`0007`-`0010` (Fase 08) añaden analítica (`scan_events`, `scan_aggregates`),
+reportes de abuso (`abuse_reports`) y rol admin (`admin_roles`).
 
 Cada migración incluye:
 

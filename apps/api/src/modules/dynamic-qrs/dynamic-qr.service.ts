@@ -42,7 +42,7 @@ export interface RequestContext {
 }
 
 export type RedirectResolution =
-  | { kind: "ok"; destinationUrl: string }
+  | { kind: "ok"; destinationUrl: string; qrId: string }
   | { kind: "paused" }
   | { kind: "expired" }
   | { kind: "missing" };
@@ -330,7 +330,9 @@ export function createDynamicQrService(input: {
       if (row.status === "paused") {
         return { kind: "paused" };
       }
-      return { kind: "ok", destinationUrl: row.destinationUrl };
+      // qrId viaja en la resolución para la analítica (Fase 08): el recorder
+      // del redirect la usa sin volver a consultar la DB.
+      return { kind: "ok", destinationUrl: row.destinationUrl, qrId: row.id };
     },
   };
 }

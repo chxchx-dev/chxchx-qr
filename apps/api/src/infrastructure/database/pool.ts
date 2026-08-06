@@ -20,6 +20,10 @@ export function createDatabase(config: ApiConfig): Database {
     max: config.DATABASE_POOL_MAX,
     ssl: config.DATABASE_SSL ? { rejectUnauthorized: false } : undefined,
     statement_timeout: config.DATABASE_STATEMENT_TIMEOUT_MS,
+    // TZ de sesión fijo a UTC: los buckets diarios de analítica y el etiquetado
+    // horario (to_char) dependen de este valor; sin fijarlo serían relativos al
+    // timezone del servidor PG (hallazgo del revisor de Fase 08).
+    options: "-c timezone=UTC",
   });
   pool.on("error", (error) => {
     // Sin handler el proceso moriría por errores de pool en reposo.
