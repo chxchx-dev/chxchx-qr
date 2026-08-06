@@ -62,7 +62,7 @@ const textContentSchema = z.object({
   text: text(QR_CONTENT_LIMITS.textMaxLength),
 });
 
-/** URL segura: solo http/https, sin credenciales, con dominio válido (se reutiliza en vCard). */
+/** URL segura: solo http/https, sin credenciales, con dominio válido (se reutiliza en vCard y QR dinámicos). */
 const safeUrl = (max: number) =>
   text(max).superRefine((value, ctx) => {
     let parsed: URL;
@@ -86,9 +86,12 @@ const safeUrl = (max: number) =>
     }
   });
 
+/** Esquema de URL segura compartido (destino de QR dinámicos y vCard). */
+export const SAFE_URL_SCHEMA = safeUrl(QR_CONTENT_LIMITS.urlMaxLength);
+
 const urlContentSchema = z.object({
   type: z.literal("url"),
-  url: safeUrl(QR_CONTENT_LIMITS.urlMaxLength),
+  url: SAFE_URL_SCHEMA,
 });
 
 const emailContentSchema = z.object({
@@ -151,7 +154,7 @@ const vcardContentSchema = z.object({
   email: text(QR_CONTENT_LIMITS.emailMaxLength)
     .pipe(z.email("Escribe un correo válido, por ejemplo nombre@dominio.com"))
     .optional(),
-  url: safeUrl(QR_CONTENT_LIMITS.urlMaxLength).optional(),
+  url: SAFE_URL_SCHEMA.optional(),
   address: textOpt(QR_CONTENT_LIMITS.vcardAddressMaxLength).optional(),
   note: textOpt(QR_CONTENT_LIMITS.vcardNoteMaxLength).optional(),
 });

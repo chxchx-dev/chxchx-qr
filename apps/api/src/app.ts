@@ -3,15 +3,25 @@ import type { ApiConfig } from "@acore/config";
 import express, { type Express } from "express";
 import { createCorsMiddleware } from "./cors.js";
 import { createErrorHandler, notFoundHandler } from "./errors.js";
+import { createDatabase, type Database } from "./infrastructure/database/pool.js";
+import { createAuthModule } from "./modules/auth/auth.routes.js";
+import { createDynamicQrRouter } from "./modules/dynamic-qrs/dynamic-qr.routes.js";
 import { createFileDownloadRouter, createFilesRouter } from "./modules/files/files.routes.js";
 import { createQrRouter } from "./modules/qr/qr.routes.js";
+import { createRedirectRouter } from "./modules/redirect/redirect.routes.js";
+import { createUsersRouter } from "./modules/users/users.routes.js";
 import { createHealthRouter } from "./routes/health.routes.js";
+
+export interface AppDeps {
+  /** Pool compartido (tests); si no llega, se crea desde la config. */
+  database?: Database;
+}
 
 /**
  * Construye la aplicación Express sin abrir el puerto.
  * Recibe la configuración ya validada (fallo temprano en server.ts).
  */
-export function createApp(config: ApiConfig): Express {
+export function createApp(config: ApiConfig, deps: AppDeps = {}): Express {
   const app = express();
 
   app.disable("x-powered-by");
@@ -36,11 +46,29 @@ export function createApp(config: ApiConfig): Express {
   // CORS: solo el origen configurado (necesario para que la web consuma la API).
   app.use(createCorsMiddleware(config.WEB_ORIGIN));
 
-  app.use("/health", createHealthRouter(config));
+  // Pool de PostgreSQL solo si la feature está habilitada (ADR-004).
+  const database = config.DYNAMIC_QR_ENABLED
+    ? (deps.database ?? createDatabase(config))
+    : undefined;
+
+  app.use("/health", createHealthRouter(config, database));
   app.use("/api/v1/qr", createQrRouter(config));
   app.use("/api/v1/files", createFilesRouter(config));
   // URL pública de descarga de archivos (ADR-003): https://.../f/{token}.
   app.use("/f", createFileDownloadRouter(config));
+
+  // Cuentas y sesiones (Fase 07, ADR-005): auth solo con DB; si está
+  // deshabilitado, /api/v1/auth, /api/v1/users y /api/v1/dynamic-qrs caen en
+  // el 404 genérico (sin exponer la feature).
+  if (database !== undefined) {
+    const auth = createAuthModule(config, database);
+    app.use("/api/v1/auth", auth.router);
+    app.use("/api/v1/users", createUsersRouter(database, auth));
+    // QR dinámicos (Fase 06 + ownership Fase 07): sesión + Origin.
+    app.use("/api/v1/dynamic-qrs", createDynamicQrRouter(config, database, auth));
+    // Redirección pública (ADR-003-style): https://.../r/{slug}.
+    app.use("/r", createRedirectRouter(config, database));
+  }
 
   app.use(notFoundHandler);
   app.use(createErrorHandler(config));

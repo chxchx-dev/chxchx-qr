@@ -2,15 +2,18 @@ import { once } from "node:events";
 import type { Server } from "node:http";
 import { apiConfig } from "@acore/config";
 import { afterEach } from "vitest";
-import { createApp } from "../src/app.js";
+import { type AppDeps, createApp } from "../src/app.js";
 
 const openServers: Server[] = [];
 
-export async function startTestServer(env: Record<string, string> = {}): Promise<{
+export async function startTestServer(
+  env: Record<string, string> = {},
+  deps: AppDeps = {},
+): Promise<{
   baseUrl: string;
 }> {
   const config = apiConfig({ NODE_ENV: "test", PORT: "0", ...env });
-  const app = createApp(config);
+  const app = createApp(config, deps);
   const server = app.listen(0);
   openServers.push(server);
   await once(server, "listening");
@@ -21,10 +24,15 @@ export async function startTestServer(env: Record<string, string> = {}): Promise
   return { baseUrl: `http://127.0.0.1:${address.port}` };
 }
 
-export async function postJson(baseUrl: string, path: string, body: unknown): Promise<Response> {
+export async function postJson(
+  baseUrl: string,
+  path: string,
+  body: unknown,
+  headers: Record<string, string> = {},
+): Promise<Response> {
   return fetch(`${baseUrl}${path}`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...headers },
     body: JSON.stringify(body),
   });
 }

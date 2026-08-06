@@ -310,7 +310,14 @@ Comportamiento:
 
 ### `POST /api/v1/dynamic-qrs`
 
-Requiere autenticación.
+Autenticación (desde Fase 07): **sesión de usuario** (cookie `HttpOnly`
+`qr_session`, ADR-005). Sin sesión → `401 AUTH_UNAUTHENTICATED`. Las mutaciones
+exigen además el header `Origin` de un origen permitido (CSRF) → si falla,
+`403 AUTH_ORIGIN_FORBIDDEN`.
+
+Los QR se asignan al usuario autenticado (`owner_user_id`): usuario A no ve ni
+gestiona los recursos de B (toda consulta está scoped por owner; lo ajeno
+responde `404 DQR_NOT_FOUND`, sin revelar existencia).
 
 Request:
 
@@ -319,35 +326,54 @@ Request:
   "name": "Menú principal",
   "destinationUrl": "https://restaurant.example/menu",
   "active": true,
-  "expiresAt": null,
-  "tags": ["menu", "sede-centro"]
+  "expiresAt": null
 }
 ```
+
+> `tags` queda fuera de alcance (tablas `qr_tags`/`dynamic_qr_tags` en una fase
+> futura de etiquetas; el contrato las muestra como evolución).
 
 Headers:
 
 ```text
-Idempotency-Key: uuid
+Idempotency-Key: <mín. 8 caracteres>
 ```
+
+Idempotencia: con la misma key y el mismo body se devuelve el mismo recurso
+(`201` con el mismo `id`); misma key con body distinto → `409
+DQR_IDEMPOTENCY_CONFLICT`. Retención 24 h.
 
 Response `201`:
 
 ```json
 {
-  "id": "dqr_01...",
-  "slug": "aB9kP2",
-  "shortUrl": "https://q.example.com/r/aB9kP2",
+  "id": "dqr_13058d99-...",
+  "slug": "vwk9VEVULp",
+  "shortUrl": "https://q.example.com/r/vwk9VEVULp",
+  "name": "Menú principal",
   "destinationUrl": "https://restaurant.example/menu",
-  "active": true,
-  "createdAt": "2026-08-05T16:00:00.000Z"
+  "status": "active",
+  "version": 1,
+  "expiresAt": null,
+  "createdAt": "2026-08-05T16:00:00.000Z",
+  "updatedAt": "2026-08-05T16:00:00.000Z"
 }
 ```
+
+El slug lo genera el servidor (criptográfico, alfabeto sin ambiguos, `DYNAMIC_SLUG_LENGTH`);
+el usuario no puede elegirlo en MVP.
+
+### `POST /api/v1/dynamic-qrs/{id}/duplicate`
+
+Crea una copia del QR (mismo destino, estado activo si el original estaba
+activo, slug nuevo). `201` con el recurso creado; el nombre se copia como
+`"<original> (copia)"`. Requiere sesión y ser el propietario (`404` si no).
 
 ## 9. Actualizar destino
 
 ### `PATCH /api/v1/dynamic-qrs/{id}`
 
-Campos permitidos:
+Campos permitidos (al menos uno):
 
 ```json
 {
@@ -358,17 +384,19 @@ Campos permitidos:
 }
 ```
 
-Usar control de concurrencia:
+Control de concurrencia obligatorio (sin lost updates):
 
 ```text
-If-Match: "version-4"
+If-Match: "v4"
 ```
 
-Respuesta puede incluir:
+- versión correcta → `200` con `ETag: "v5"` (versión incrementada);
+- versión obsoleta → `409 DQR_VERSION_CONFLICT`;
+- sin `If-Match` → `428 DQR_VERSION_REQUIRED`.
 
-```text
-ETag: "version-5"
-```
+`expiresAt: null` quita la expiración; un `expiresAt` pasado → `422
+DQR_EXPIRES_IN_PAST`. También existe `DELETE /api/v1/dynamic-qrs/{id}`
+(borrado suave → `204`; después, `404` en GET y en la redirección).
 
 ## 10. Redirección
 
@@ -436,21 +464,42 @@ Respuesta:
 
 La geolocalización es opcional y no forma parte del núcleo.
 
-## 13. Sesión
+## 13. Sesión (Fase 07, ADR-005)
 
 ### `POST /api/v1/auth/register`
+
+`{ email, password, displayName? }` → `201 { user }` + `Set-Cookie`. Email
+duplicado (case-insensitive) → `409 AUTH_EMAIL_IN_USE`. Contraseña mín. 8,
+máx. 128. El token nunca viaja en JSON.
+
 ### `POST /api/v1/auth/login`
+
+`{ email, password }` → `200 { user }` + `Set-Cookie` nueva. Email desconocido
+y contraseña incorrecta devuelven el **mismo** `401 AUTH_INVALID_CREDENTIALS`
+(anti-enumeración). Cada login emite un token nuevo (anti-fixation).
+
 ### `POST /api/v1/auth/logout`
+
+Revoca la sesión actual y limpia la cookie → `204`.
+
 ### `GET /api/v1/auth/me`
 
-Autenticación recomendada:
+`200 { user }` con el perfil de la sesión; sin sesión válida → `401
+AUTH_UNAUTHENTICATED`.
 
-- cookie `HttpOnly`;
-- `Secure` en producción;
-- `SameSite=Lax`;
-- sesión opaca;
+### `PATCH /api/v1/users/me`
+
+Actualiza `displayName` y/o contraseña (`currentPassword` + `newPassword`).
+Cambiar la contraseña revoca el resto de sesiones. `422 AUTH_PASSWORD_WEAK` si
+la contraseña actual no coincide.
+
+Detalles de la sesión:
+
+- cookie `HttpOnly`, `SameSite=Lax`, `Secure` en producción;
+- sesión opaca: token 256 bits firmado con HMAC (`SESSION_SECRET_CURRENT`);
 - hash del token guardado en DB;
-- comprobación de `Origin` en mutaciones.
+- expiración (`SESSION_TTL_HOURS`) y revocación (logout/cambio de contraseña);
+- comprobación de `Origin` en mutaciones (registro, login, logout, QR, perfil).
 
 ## 14. Códigos HTTP
 
@@ -495,6 +544,24 @@ Códigos de error QR (cuerpo `application/problem+json`, campo `code`):
 | `FILE_EXPIRED` | 410 | el archivo expiró y fue eliminado |
 | `FILE_STORAGE_UNAVAILABLE` | 503 | storage no disponible |
 | `FILE_RATE_LIMITED` | 429 | límite de frecuencia de subida/descarga superado |
+| `DQR_DISABLED` | 403 | QR dinámicos deshabilitados en el entorno |
+| `DQR_SCHEMA_INVALID` | 400 | entrada que no cumple el esquema del contrato |
+| `DQR_NOT_FOUND` | 404 | slug o id inexistente (bloqueado/eliminado no se revelan) |
+| `DQR_EXPIRED` | 410 | el QR expiró y ya no redirige |
+| `DQR_VERSION_CONFLICT` | 409 | If-Match no coincide con la versión actual |
+| `DQR_VERSION_REQUIRED` | 428 | falta If-Match en una mutación versionada |
+| `DQR_IDEMPOTENCY_CONFLICT` | 409 | misma Idempotency-Key con otro request |
+| `DQR_INVALID_DESTINATION` | 422 | destino no permitido (defensa en profundidad) |
+| `DQR_EXPIRES_IN_PAST` | 422 | la expiración debe ser futura |
+| `DQR_DB_UNAVAILABLE` | 503 | base de datos no disponible |
+| `DQR_RATE_LIMITED` | 429 | límite de frecuencia de QR dinámicos superado |
+| `AUTH_SCHEMA_INVALID` | 400 | entrada que no cumple el esquema de auth |
+| `AUTH_EMAIL_IN_USE` | 409 | el email ya está registrado |
+| `AUTH_INVALID_CREDENTIALS` | 401 | credenciales inválidas (mensaje genérico) |
+| `AUTH_UNAUTHENTICATED` | 401 | sesión ausente, inválida o expirada |
+| `AUTH_ORIGIN_FORBIDDEN` | 403 | Origin no permitido en una mutación (CSRF) |
+| `AUTH_PASSWORD_WEAK` | 422 | contraseña actual incorrecta al cambiarla |
+| `AUTH_RATE_LIMITED` | 429 | límite de login/registro superado |
 
 ## 15. Compatibilidad
 

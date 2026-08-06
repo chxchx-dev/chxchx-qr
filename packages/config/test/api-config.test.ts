@@ -20,6 +20,46 @@ describe("apiConfig", () => {
     expect(config.RATE_LIMIT_PNG_PER_MINUTE).toBe(20);
     expect(config.RATE_LIMIT_UPLOAD_PER_HOUR).toBe(20);
     expect(config.TRUST_PROXY).toBe(false);
+    // Fase 06: defaults seguros (deshabilitado, sin token requerido).
+    expect(config.DYNAMIC_QR_ENABLED).toBe(false);
+    expect(config.DATABASE_URL).toBeUndefined();
+    expect(config.DYNAMIC_SLUG_LENGTH).toBe(10);
+    expect(config.SHORT_DOMAIN).toBe("http://localhost:4000");
+    expect(config.REDIRECT_CACHE_TTL_SECONDS).toBe(30);
+    // Fase 07: sesiones opacas y scrypt con defaults.
+    expect(config.SESSION_COOKIE_NAME).toBe("qr_session");
+    expect(config.SESSION_TTL_HOURS).toBe(168);
+    expect(config.SESSION_SECRET_CURRENT).toBeUndefined();
+    expect(config.PASSWORD_SCRYPT_N).toBe(16384);
+    expect(config.PASSWORD_SCRYPT_R).toBe(8);
+    expect(config.PASSWORD_SCRYPT_P).toBe(1);
+    expect(config.RATE_LIMIT_LOGIN_PER_15_MINUTES).toBe(10);
+  });
+
+  it("DYNAMIC_QR_ENABLED=true exige DATABASE_URL y SESSION_SECRET_CURRENT", () => {
+    expect(() => apiConfig({ DYNAMIC_QR_ENABLED: "true" })).toThrow(/DATABASE_URL/);
+    expect(() =>
+      apiConfig({ DYNAMIC_QR_ENABLED: "true", DATABASE_URL: "postgres://localhost/x" }),
+    ).toThrow(/SESSION_SECRET_CURRENT/);
+    const ok = apiConfig({
+      DYNAMIC_QR_ENABLED: "true",
+      DATABASE_URL: "postgres://localhost/acore_qr",
+      SESSION_SECRET_CURRENT: "secreto-de-sesion-largo-y-aleatorio-123456",
+    });
+    expect(ok.DYNAMIC_QR_ENABLED).toBe(true);
+    expect(ok.DATABASE_URL).toBe("postgres://localhost/acore_qr");
+    expect(ok.SESSION_SECRET_CURRENT).toBe("secreto-de-sesion-largo-y-aleatorio-123456");
+    expect(ok.SESSION_SECRET_PREVIOUS).toBeUndefined();
+  });
+
+  it("rechaza DYNAMIC_SLUG_LENGTH fuera de rango y secretos cortos", () => {
+    expect(() => apiConfig({ DYNAMIC_SLUG_LENGTH: "4" })).toThrow(/Configuración de API inválida/);
+    expect(() => apiConfig({ SESSION_SECRET_CURRENT: "corto" })).toThrow(
+      /Configuración de API inválida/,
+    );
+    expect(() => apiConfig({ PASSWORD_SCRYPT_N: "10000" })).toThrow(
+      /Configuración de API inválida/,
+    );
   });
 
   it("rechaza LOGO_MAX_DIMENSION fuera de rango", () => {

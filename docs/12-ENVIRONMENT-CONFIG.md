@@ -50,6 +50,9 @@ RATE_LIMIT_UPLOAD_PER_HOUR=20
 RATE_LIMIT_LOGIN_PER_15_MINUTES=10
 ```
 
+`RATE_LIMIT_LOGIN_PER_15_MINUTES` aplica a registro y login (brute force,
+docs/07 §11).
+
 ## 5. Archivos
 
 ```dotenv
@@ -92,14 +95,21 @@ Nunca exponer credenciales S3 al frontend.
 ## 6. Base de datos
 
 ```dotenv
-DATABASE_URL=postgresql://...
+DATABASE_URL=postgres://localhost:5432/acore_qr
 DATABASE_POOL_MIN=1
 DATABASE_POOL_MAX=10
-DATABASE_SSL=true
+DATABASE_SSL=false
 DATABASE_STATEMENT_TIMEOUT_MS=5000
 ```
 
-## 7. Sesiones
+- obligatoria si `DYNAMIC_QR_ENABLED=true` (fallo temprano en `apiConfig`);
+- las migraciones (`apps/api/src/infrastructure/database/migrations/`) se aplican
+  al arranque del server y vía `npm run db:migrate -w apps/api` (advisory lock +
+  transacción; `db:migrate:down` revierte la última);
+- los tests de QR dinámicos usan DBs propias (`acore_qr_test_*`), creadas y
+  migradas automáticamente; en CI corre un servicio postgres (`DATABASE_URL_TEST`).
+
+## 7. Sesiones (Fase 07, ADR-005)
 
 ```dotenv
 SESSION_COOKIE_NAME=qr_session
@@ -111,7 +121,16 @@ PASSWORD_SCRYPT_R=8
 PASSWORD_SCRYPT_P=1
 ```
 
-Los parámetros exactos deben probarse en hardware objetivo.
+- `SESSION_SECRET_CURRENT` es **obligatoria** si `DYNAMIC_QR_ENABLED=true`
+  (mín. 32 caracteres): firma HMAC del valor de la cookie (`token.firma`);
+- `SESSION_SECRET_PREVIOUS` habilita rotación sin invalidar sesiones
+  (docs/12 §12): mover current→previous, generar nuevo current, desplegar;
+- cookie: `HttpOnly`, `SameSite=Lax`, `Secure` en producción, `Path=/`;
+- el token (32 bytes aleatorios) solo existe en la cookie; la DB guarda
+  `sha256(token)`;
+- contraseñas: scrypt de Node con salt aleatorio; los parámetros
+  (`PASSWORD_SCRYPT_N/R/P`) se almacenan versionados con cada hash (re-hash sin
+  romper los existentes). Probar el coste en el hardware objetivo.
 
 ## 8. Dinámicos
 
@@ -119,11 +138,21 @@ Los parámetros exactos deben probarse en hardware objetivo.
 DYNAMIC_QR_ENABLED=false
 SHORT_DOMAIN=http://localhost:4000
 DYNAMIC_SLUG_LENGTH=10
+REDIRECT_CACHE_TTL_SECONDS=30
+RATE_LIMIT_DQR_CREATE_PER_MINUTE=20
+RATE_LIMIT_DQR_READ_PER_MINUTE=60
+RATE_LIMIT_REDIRECT_PER_MINUTE=600
 ANALYTICS_ENABLED=false
 ANALYTICS_RAW_RETENTION_DAYS=90
 ANALYTICS_HMAC_SECRET_CURRENT=
 ANALYTICS_HMAC_SECRET_PREVIOUS=
 ```
+
+- desde la Fase 07 la auth es por **sesión de usuario** (cookie HttpOnly,
+  ADR-005): `INTERNAL_API_TOKEN` fue eliminado; los QR existentes sin dueño
+  quedaron anónimos (siguen redirigiendo, sin gestión en dashboard);
+- `SHORT_DOMAIN` es la base de la URL que viaja en el QR (`{SHORT_DOMAIN}/r/{slug}`);
+- `REDIRECT_CACHE_TTL_SECONDS=0` desactiva la cache en memoria (tests).
 
 ## 9. Web
 

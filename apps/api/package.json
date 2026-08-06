@@ -6,8 +6,10 @@
   "description": "API de acore-qr (Express 5). Health y base; endpoints QR en Fase 02.",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && rm -rf dist/infrastructure/database/migrations && cp -r src/infrastructure/database/migrations dist/infrastructure/database/migrations",
     "start": "node dist/server.js",
+    "db:migrate": "tsx src/infrastructure/database/cli.ts",
+    "db:migrate:down": "tsx src/infrastructure/database/cli.ts down",
     "typecheck": "npm run build && tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json",
     "test": "npm run build && vitest run",
     "test:integration": "npm run test",
@@ -19,6 +21,7 @@
     "@acore/qr-core": "*",
     "express": "^5.1.0",
     "multer": "^2.2.0",
+    "pg": "^8.22.0",
     "sharp": "^0.35.3",
     "zod": "^4.0.0"
   },
@@ -26,6 +29,7 @@
     "@types/express": "^5.0.0",
     "@types/multer": "^2.2.0",
     "@types/node": "^24.0.0",
+    "@types/pg": "^8.20.4",
     "tsx": "^4.19.0",
     "typescript": "^5.9.0"
   }

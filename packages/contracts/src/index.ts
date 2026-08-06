@@ -2,6 +2,34 @@
  * Contratos compartidos entre apps y paquetes (Fase 02):
  * esquemas Zod, DTOs y códigos de error de los endpoints QR.
  */
+export {
+  AUTH_LIMITS,
+  type AuthResponse,
+  type AuthUser,
+  authResponseSchema,
+  authUserSchema,
+  emailField,
+  type LoginInput,
+  loginSchema,
+  passwordField,
+  type RegisterInput,
+  registerSchema,
+  type UpdateProfileInput,
+  updateProfileSchema,
+} from "./auth.schema.js";
+export {
+  type CreateDynamicQrInput,
+  createDynamicQrSchema,
+  DYNAMIC_QR_LIMITS,
+  type DynamicQrResponse,
+  type DynamicQrStatus,
+  dynamicQrResponseSchema,
+  dynamicQrStatusSchema,
+  type ListDynamicQrsResponse,
+  listDynamicQrsResponseSchema,
+  type PatchDynamicQrInput,
+  patchDynamicQrSchema,
+} from "./dynamic-qr.schema.js";
 export { type ErrorCode, ErrorCodes } from "./error-codes.js";
 export {
   type FileUploadResponse,
@@ -11,11 +39,19 @@ export {
   type AllowedFileMime,
   FILE_UPLOAD_LIMITS,
 } from "./file-upload.schema.js";
+export {
+  type ListDynamicQrsQuery,
+  listDynamicQrsQuerySchema,
+  PAGINATION_LIMITS,
+  pageParam,
+  pageSizeParam,
+} from "./pagination.schema.js";
 export { type ProblemDetails, problemDetailsSchema } from "./problem.schema.js";
 export {
   QR_CONTENT_LIMITS,
   type QrContent,
   qrContentSchema,
+  SAFE_URL_SCHEMA,
   urlSchemeCheck,
 } from "./qr-content.schema.js";
 export {

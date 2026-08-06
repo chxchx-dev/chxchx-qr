@@ -12,6 +12,23 @@ jobs:
   quality:
     name: Calidad (format, lint, typecheck, test, build, audit)
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: qr
+          POSTGRES_PASSWORD: qr
+          POSTGRES_DB: acore_qr_test_dqr
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U qr"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      # Los tests de QR dinámicos (Fase 06) migran y usan sus propias DBs de test.
+      DATABASE_URL_TEST: postgres://qr:qr@localhost:5432/acore_qr_test_dqr
     steps:
       - name: Checkout
         uses: actions/checkout@v4

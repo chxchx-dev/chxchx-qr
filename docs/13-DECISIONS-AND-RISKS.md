@@ -57,6 +57,9 @@
 | Redirección cae por analítica | Media | Crítico | analítica no bloqueante |
 | Pérdida de destino | Baja | Crítico | backup + DB |
 | Fuga de secretos | Media | Crítico | env + secret scan |
+| Fuerza bruta en login/registro | Alta | Alta | scrypt + rate limit + 401 genérico |
+| Robo/fijación de sesión | Media | Crítico | cookie HttpOnly + rotación + hash en DB |
+| CSRF en mutaciones | Media | Alta | Origin check + SameSite |
 | Dependencia vulnerable | Media | Alta | audit + pin + updates |
 | Costos de storage | Media | Media | TTL + límites |
 | Privacidad excesiva | Media | Alta | hashes rotativos |

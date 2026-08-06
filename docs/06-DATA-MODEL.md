@@ -250,16 +250,22 @@ No permitir que el usuario elija slug en MVP.
 
 ## 8. Migraciones
 
-Estructura:
+Estructura (la numeración sigue el orden real de aplicación):
 
 ```text
 apps/api/src/infrastructure/database/migrations/
-  0001_create_users.sql
-  0002_create_sessions.sql
-  0003_create_dynamic_qrs.sql
-  0004_create_files.sql
-  0005_create_scan_events.sql
+  0001_create_dynamic_qrs.sql
+  0002_create_idempotency_keys.sql
+  0003_create_audit_events.sql
+  0004_create_users.sql
+  0005_create_sessions.sql
+  0006_assign_dynamic_qr_owner.sql
 ```
+
+`0006` introduce el ownership: `owner_user_id` (text, FK a `users`) en
+`dynamic_qrs` e `idempotency_keys` (única por `(owner_user_id, key_hash)`),
+`actor_user_id` en `audit_events`. Las filas previas quedan anónimas (`NULL`):
+siguen redirigiendo pero no se gestionan desde el dashboard.
 
 Cada migración incluye:
 
