@@ -44,17 +44,19 @@ bloqueos/reportes.
 - analítica de QR estáticos (requieren rastreo, prohibido por docs/00);
 - dashboard global de admin con métricas de plataforma (solo moderación).
 
-## Decisiones pendientes (bloquean tareas 5-6)
+## Decisiones tomadas (2026-08-06, usuario)
 
-1. **Bootstrap del primer admin**: ¿env `ADMIN_EMAILS` (lista en config) o script
-   CLI `db:promote-admin`? (la Fase 07 no tiene mecanismo de roles aún).
-2. **Reporte de abuso**: ¿público (sin sesión, con rate limit propio) o solo
-   autenticado? El plan de fase dice "report endpoint" sin especificar.
-3. **Países**: el doc de fase los deja "solo si habilitado" — ¿se incluye la
-   columna `country` opcional en `scan_events` desde ya (sin geoactiva) o se
-   aplaza la tabla completa?
-4. **ADR**: ¿escribir `ADR-008-analytics-privacy` (hash diario, no IP/UA) y
-   `ADR-009-admin-roles`? (cambio mayor según docs/13 §6: datos de usuarios).
+1. **Bootstrap del primer admin**: **SQL manual** — el rol `admin` se asigna
+   directamente en la DB (`INSERT INTO admin_roles ...`); no hay mecanismo en el
+   producto ni CLI. El `admin.middleware` solo lee la tabla (sin `ADMIN_EMAILS`).
+2. **Reporte de abuso**: **público** — sin sesión, con rate limit propio
+   (`RATE_LIMIT_ABUSE_REPORT_PER_HOUR`, token bucket por IP) y validación de
+   motivo (longitud mínima para evitar ruido).
+3. **Países**: columna `country` (nullable) en `scan_events` desde ya, **sin
+   geolocalización activa** (siempre NULL; se evita migrar después). La UI no
+   muestra el bloque de países.
+4. **ADRs**: **no** — las decisiones de privacidad y roles se documentan solo en
+   el reporte de cierre de la fase (sin `ADR-008`/`ADR-009`).
 
 ## Archivos por crear
 
@@ -96,14 +98,12 @@ apps/web/src/features/admin/UserStatusControl.tsx
 apps/web/src/features/admin/admin-api.client.ts
 docs/execution/PHASE-08-PLAN.md   (este archivo)
 docs/execution/PHASE-08-REPORT.md (al cerrar)
-docs/adr/ADR-008-analytics-privacy.md      (pendiente de decisión)
-docs/adr/ADR-009-admin-roles.md            (pendiente de decisión)
 ```
 
 ## Archivos por modificar
 
 ```text
-packages/config/src/api-config.ts        ANALYTICS_* (+ ADMIN_EMAILS si se decide) + tests
+packages/config/src/api-config.ts        ANALYTICS_* + tests
 packages/config/test/api-config.test.ts
 packages/contracts/src/error-codes.ts    códigos ANL_* / ADM_* / ABUSE_*
 packages/contracts/src/index.ts          exportar analytics.schema y admin.schema
@@ -124,7 +124,8 @@ docs/phases/PHASE-08-ANALYTICS-ADMIN.md  checklist de la puerta de salida ✅
 
 ## Orden de tareas
 
-1. Decisiones del usuario (bootstrap admin, reporte público, países, ADRs).
+1. ~~Decisiones del usuario~~ ✅ resueltas (SQL manual, reporte público, país
+   inactivo, sin ADR).
 2. Contracts y códigos `ANL_*`/`ADM_*`/`ABUSE_*` (+tests).
 3. Config `ANALYTICS_*` (+tests).
 4. Migraciones 0007–0010.
