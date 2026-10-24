@@ -10,7 +10,6 @@ export function DownloadActions({
   validation,
   downloadState,
   filename,
-  hasLogo,
   onFilenameChange,
   onDownload,
   onCopy,
@@ -18,7 +17,6 @@ export function DownloadActions({
   validation: QrValidationState;
   downloadState: QrDownloadState;
   filename: string;
-  hasLogo: boolean;
   onFilenameChange: (value: string) => void;
   onDownload: (format: ExportFormat) => void;
   onCopy: () => void;
@@ -32,7 +30,7 @@ export function DownloadActions({
       <h2 id="download-title" className="text-sm font-semibold text-text">
         {ui.download.title}
       </h2>
-      <ExportFormatSelector value={format} onChange={setFormat} hasLogo={hasLogo} />
+      <ExportFormatSelector value={format} onChange={setFormat} />
       <TextField
         label={ui.download.filenameLabel}
         value={filename}

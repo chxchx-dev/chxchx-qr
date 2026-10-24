@@ -1,13 +1,20 @@
 /** Panel de vista previa con control de zoom. */
 import { useState } from "react";
 import { ui } from "../../../shared/lib/messages";
+import type { QrPreviewState } from "../hooks/useQrPreview";
 import { QrSvgPreview } from "./QrSvgPreview";
 
 const ZOOM_STEPS = [1, 1.5, 2] as const;
 
-export function PreviewPanel({ svg }: { svg: string | undefined }) {
+export function PreviewPanel({ preview }: { preview: QrPreviewState }) {
   const [zoomIndex, setZoomIndex] = useState(0);
   const zoom = ZOOM_STEPS[zoomIndex] ?? 1;
+  const placeholder = {
+    idle: ui.preview.placeholder,
+    loading: ui.preview.loading,
+    ready: ui.preview.placeholder,
+    error: ui.preview.error,
+  }[preview.status];
 
   return (
     <section aria-labelledby="preview-title" className="flex flex-col gap-3">
@@ -38,7 +45,7 @@ export function PreviewPanel({ svg }: { svg: string | undefined }) {
         </div>
       </div>
       <div className="flex justify-center">
-        <QrSvgPreview svg={svg} zoom={zoom} />
+        <QrSvgPreview svg={preview.svg} zoom={zoom} placeholder={placeholder} />
       </div>
       <p className="text-xs text-muted">{ui.preview.parityNote}</p>
     </section>

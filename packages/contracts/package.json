@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Contratos compartidos (esquemas Zod, DTOs, códigos de error) entre apps y paquetes.",
+  "description": "Esquemas y contratos compartidos para el generador de QR estáticos.",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -14,7 +14,6 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "npm run build && tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json",
     "test": "npm run build && vitest run",
-    "test:unit": "npm run test",
     "test:coverage": "npm run build && vitest run --coverage"
   },
   "dependencies": {

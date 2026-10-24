@@ -37,42 +37,6 @@ export class QrUnsupportedFormatError extends Error {
   }
 }
 
-export class QrLogoInvalidError extends Error {
-  readonly code: string = ErrorCodes.QR_LOGO_INVALID;
-
-  constructor(message: string) {
-    super(message);
-    this.name = "QrLogoInvalidError";
-  }
-}
-
-export class QrLogoTooLargeError extends Error {
-  readonly code: string = ErrorCodes.QR_LOGO_TOO_LARGE;
-
-  constructor(message: string) {
-    super(message);
-    this.name = "QrLogoTooLargeError";
-  }
-}
-
-export class QrLogoRequiresHighEccError extends Error {
-  readonly code: string = ErrorCodes.QR_LOGO_REQUIRES_HIGH_ECC;
-
-  constructor(message: string) {
-    super(message);
-    this.name = "QrLogoRequiresHighEccError";
-  }
-}
-
-export class QrLogoUnsupportedFormatError extends Error {
-  readonly code: string = ErrorCodes.QR_LOGO_UNSUPPORTED_FORMAT;
-
-  constructor(message: string) {
-    super(message);
-    this.name = "QrLogoUnsupportedFormatError";
-  }
-}
-
 export class QrRenderUnscannableError extends Error {
   readonly code: string = ErrorCodes.QR_RENDER_UNSCANNABLE;
 

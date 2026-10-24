@@ -1,57 +1,57 @@
 # acore-qr
 
-Professional QR code generation platform built as a TypeScript monorepo.
+Generador de **QR estáticos**. La API valida el contenido y genera la imagen en el servidor; la web es una interfaz pequeña para completar el formulario, ver el resultado y descargarlo. La generación no llama a servicios QR externos y no necesita cuentas, base de datos ni Docker.
 
-The repository contains:
+## Qué incluye
 
-- `apps/web`: React + Vite web application.
-- `apps/api`: Express API for validation, rendering, files, dynamic QR codes, authentication, analytics, and administration.
-- `packages/qr-core`: shared QR domain and rendering engine.
-- `packages/contracts`: shared API schemas and error contracts.
-- `packages/config`: validated environment configuration.
-- `docs`: product, architecture, security, API, testing, deployment, and phase documentation.
+- Nueve tipos de contenido: texto, URL, correo, teléfono, SMS, WiFi, contacto vCard, evento y ubicación.
+- Opciones de corrección de errores, tamaño, margen y colores con contraste validado.
+- Salidas SVG, PNG y GIF.
+- Vista previa y descarga generadas por la misma API.
+- Contratos y motor QR locales al monorepo; no se persisten los datos enviados.
 
-## Requirements
+El generador usa el paquete local `qr` desde `packages/qr-core`. Ese paquete crea las matrices y formatos QR sin consultar una API remota. PNG se rasteriza en la API con `sharp` y se verifica con `jsqr`.
 
-- Node.js `>=20.19.0`
-- npm
-- PostgreSQL when dynamic QR codes, authentication, or analytics are enabled
+## Estructura
 
-## Quick start
+- `apps/web`: formulario React y presentación de la vista previa.
+- `apps/api`: validación, generación, renderizado y descargas.
+- `packages/qr-core`: builders de contenido y motor QR.
+- `packages/contracts`: esquemas compartidos para contenido y opciones.
+- `packages/config`: validación de variables de entorno.
+- `docs`: alcance vigente, contratos y decisiones. Los informes de fases antiguas quedan como archivo histórico.
+
+## Requisitos
+
+- Node.js 24 (el `package.json` acepta `>=20.19.0`).
+- npm.
+
+## Desarrollo local
 
 ```bash
-npm install
-cp .env.example .env
+npm ci
+cp apps/api/.env.example apps/api/.env
+cp apps/web/.env.example apps/web/.env
 npm run dev
 ```
 
-The web app runs at `http://localhost:5173` and the API at `http://localhost:4000`.
+La web abre en `http://localhost:5173` y la API en `http://localhost:4000`. La configuración de ejemplo es suficiente para empezar; no hacen falta servicios adicionales.
 
-## Quality checks
-
-Run the complete local verification suite before opening a pull request:
+## Comandos
 
 ```bash
-npm run format:check
-npm run lint
-npm run typecheck
-npm test
-npm run build
+npm run dev          # inicia web y API
+npm run build        # compila paquetes, API y web
+npm run typecheck    # comprueba los tipos
+npm run lint         # Biome
+npm test             # pruebas de paquetes y aplicaciones
+npm run test:e2e     # flujo web completo con Playwright
 ```
 
-## Project principles
+## Alcance
 
-- The server is the canonical source for downloadable QR output.
-- Static QR codes contain payloads directly; dynamic QR codes contain controlled redirect URLs.
-- Uploaded files are represented by secure links, never embedded as binary QR payloads.
-- User-uploaded scripts and executables are rejected by policy.
-- Security-sensitive behavior must be documented before implementation.
-- Every phase must meet its acceptance criteria and quality gates.
+Este proyecto genera códigos estáticos: cada QR contiene directamente el contenido indicado y no es editable ni rastreable después de descargarlo. No incluye QR dinámicos, archivos alojados, cuentas, historial ni analítica. El alcance y las siguientes decisiones están en [`docs/README.md`](docs/README.md).
 
-## Documentation
+## Licencia
 
-Start with [`docs/README.md`](docs/README.md) for the architecture and phase plan. The detailed technical documentation is currently being migrated to English while preserving the existing contracts and decisions.
-
-## License
-
-Private project. Distribution and licensing are governed by the project owner.
+Proyecto privado. La distribución del proyecto se rige por la decisión de su propietario; las licencias de las dependencias se detallan en [`docs/11-DEPENDENCY-POLICY.md`](docs/11-DEPENDENCY-POLICY.md).

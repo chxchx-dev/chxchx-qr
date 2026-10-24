@@ -26,7 +26,7 @@ La plataforma ahora permite subir un archivo permitido (PNG/JPEG/WebP/PDF/texto)
 | tests | ✅ **171/171** (53 API + 28 web + 12 config + 12 contracts + 66 qr-core) |
 | E2E | ✅ **10/10** (Chromium + móvil), incluye **3 tests nuevos de archivos** (subida→URL→preview→descarga, quitar, SVG bloqueado) |
 | build | ✅ Vite 476 KB JS / 19.8 KB CSS (3.7 s) + `tsc --noEmit` de la web |
-| Docker | ✅ `Dockerfile.web` con `ARG VITE_FILE_UPLOAD_ENABLED`; `compose.yaml` con env `FILE_*` y volumen nombrado `file-storage` |
+| Docker | ✅ `apps/web/Dockerfile` con `ARG VITE_FILE_UPLOAD_ENABLED`; `compose.yaml` con env `FILE_*` y volumen nombrado `file-storage` |
 
 ## Decisiones clave (con evidencia)
 
@@ -60,7 +60,7 @@ La plataforma ahora permite subir un archivo permitido (PNG/JPEG/WebP/PDF/texto)
 - **Web (nuevo)**: `features/files/{file-api.client,useFileUpload,FileUploadField,FileUploadProgress,FileResult}.ts(x)`.
 - **Web (modificado)**: `features/generator/{generator.types,build-dto,ContentTypeSelector,GeneratorScreen}.ts(x)`, `shared/lib/messages.ts` (`ui.types.file` + `ui.files`), `test/build-dto.test.ts`, `test/e2e/{files.spec.ts, mobile.spec.ts}`, `test/e2e/fixtures/sample.pdf`, `scripts/e2e.sh`.
 - **Config**: `web-config.ts` (default `true`), `web-config.test.ts`, `.env.example` (raíz, web, API).
-- **Docker**: `Dockerfile.web` (ARG), `compose.yaml` (env `FILE_*` + volumen `file-storage`).
+- **Docker**: `apps/web/Dockerfile` (ARG), `compose.yaml` (env `FILE_*` + volumen `file-storage`).
 - **API (deuda de lint)**: `modules/files/{filename,file-cleanup,file-download.controller,file-policy,files.controller,files.routes,files.service,upload.middleware}.ts`, `infrastructure/storage/storage-factory.ts`, `server.ts`, `test/files.test.ts`.
 - **Docs**: `05-API-CONTRACTS.md` (§7 contrato real + códigos `FILE_*`), `12-ENVIRONMENT-CONFIG.md` (§5), `PHASE-05-FILE-LINKS.md` (checklist ✅).
 

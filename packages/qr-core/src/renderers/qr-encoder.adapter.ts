@@ -5,10 +5,7 @@
  *
  * - encodeMatrix: matriz de módulos puros (sin zona silenciosa).
  * - renderGifBytes: GIF87a directo del encoder.
- * - decodeMatrix / decodeRgbImage: verificación round-trip. La decodificación
- *   usa `jsqr` (ver Fase 04): el decoder de `qr` fallaba en la versión 5
- *   ("invalid format pattern"), rompiendo el criterio "la exportación falla si
- *   no decodifica" justo en el caso típico logo + ECC alto. jsqr cubre v1-40.
+ * - decodeMatrix / decodeRgbImage: verificación de lectura con `jsqr`.
  */
 
 import jsQR from "jsqr";
@@ -89,8 +86,7 @@ export interface RgbImage {
 }
 
 /**
- * Matriz pura → imagen RGB con zona silenciosa y escala (como la vería un
- * escáner real). Reutilizable para el decode final del PNG en la API.
+ * Matriz pura → imagen RGB con zona silenciosa y escala para decodificación.
  */
 export function renderMatrixRgb(
   matrix: QrMatrix,

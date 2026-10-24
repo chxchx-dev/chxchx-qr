@@ -2,19 +2,16 @@ import { once } from "node:events";
 import type { Server } from "node:http";
 import { apiConfig } from "@acore/config";
 import { afterEach } from "vitest";
-import { type AppDeps, createApp } from "../src/app.js";
+import { createApp } from "../src/app.js";
 
 const openServers: Server[] = [];
 
-export async function startTestServer(
-  env: Record<string, string> = {},
-  deps: AppDeps = {},
-): Promise<{
+export async function startTestServer(env: Record<string, string> = {}): Promise<{
   baseUrl: string;
 }> {
   const config = apiConfig({ NODE_ENV: "test", PORT: "0", ...env });
-  const app = createApp(config, deps);
-  const server = app.listen(0);
+  const app = createApp(config);
+  const server = app.listen(0, "127.0.0.1");
   openServers.push(server);
   await once(server, "listening");
   const address = server.address();
@@ -35,30 +32,6 @@ export async function postJson(
     headers: { "Content-Type": "application/json", ...headers },
     body: JSON.stringify(body),
   });
-}
-
-/** Sube un archivo de logo (multipart, campo "logo"). */
-export async function uploadLogo(
-  baseUrl: string,
-  bytes: Uint8Array,
-  filename = "logo.png",
-  mimetype = "image/png",
-): Promise<Response> {
-  const form = new FormData();
-  form.append("logo", new Blob([bytes], { type: mimetype }), filename);
-  return fetch(`${baseUrl}/api/v1/qr/logo`, { method: "POST", body: form });
-}
-
-/** Sube un archivo general (multipart, campo "file") a /api/v1/files. */
-export async function uploadFile(
-  baseUrl: string,
-  bytes: Uint8Array,
-  filename: string,
-  mimetype: string,
-): Promise<Response> {
-  const form = new FormData();
-  form.append("file", new Blob([bytes], { type: mimetype }), filename);
-  return fetch(`${baseUrl}/api/v1/files`, { method: "POST", body: form });
 }
 
 export function parsePngHeader(bytes: Uint8Array): {

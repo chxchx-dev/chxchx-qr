@@ -6,15 +6,12 @@ import { CONTENT_TYPES, type QrContentType } from "../generator.types";
 export function ContentTypeSelector({
   value,
   onChange,
-  fileEnabled = false,
 }: {
   value: QrContentType;
   onChange: (type: QrContentType) => void;
-  /** "Archivo" solo se ofrece cuando VITE_FILE_UPLOAD_ENABLED=true (Fase 05). */
-  fileEnabled?: boolean;
 }) {
   const buttonsRef = useRef<Record<string, HTMLButtonElement | null>>({});
-  const types = fileEnabled ? CONTENT_TYPES : CONTENT_TYPES.filter((type) => type !== "file");
+  const types = CONTENT_TYPES;
 
   function moveFocus(index: number): void {
     const type = types[index];

@@ -1,12 +1,5 @@
-import sharp from "sharp";
 import { describe, expect, it } from "vitest";
-import { postJson, startTestServer, uploadLogo } from "./helpers.js";
-
-async function tinyLogo(): Promise<Buffer> {
-  const svg =
-    '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><rect width="32" height="32" fill="white"/><circle cx="16" cy="16" r="10" fill="blue"/></svg>';
-  return sharp(Buffer.from(svg)).png().toBuffer();
-}
+import { postJson, startTestServer } from "./helpers.js";
 
 describe("rate limit (docs/07 §11)", () => {
   it("limita el render PNG a la cuota por minuto (429 QR_RATE_LIMITED)", async () => {
@@ -68,16 +61,6 @@ describe("rate limit (docs/07 §11)", () => {
     // PNG agotó su cuota; SVG sigue su cuota propia.
     expect((await postJson(baseUrl, "/api/v1/qr/render", png)).status).toBe(429);
     expect((await postJson(baseUrl, "/api/v1/qr/render", svg)).status).toBe(200);
-  });
-
-  it("limita el upload de logos por hora", async () => {
-    const { baseUrl } = await startTestServer({ RATE_LIMIT_UPLOAD_PER_HOUR: "1" });
-    const logo = await tinyLogo();
-    expect((await uploadLogo(baseUrl, logo)).status).toBe(200);
-    const limited = await uploadLogo(baseUrl, logo);
-    expect(limited.status).toBe(429);
-    const body = (await limited.json()) as { code: string };
-    expect(body.code).toBe("QR_RATE_LIMITED");
   });
 
   it("limita el validate a su cuota", async () => {

@@ -47,8 +47,8 @@ Crear una base reproducible, estricta y verificable: el repositorio instala, com
 | `.nvmrc` | versión Node (24) |
 | `.env.example` | catálogo no secreto |
 | `.dockerignore` | contexto de imágenes |
-| `Dockerfile.api` | imagen API multi-stage |
-| `Dockerfile.web` | imagen web multi-stage |
+| `apps/api/Dockerfile` | imagen API multi-stage |
+| `apps/web/Dockerfile` | imagen web multi-stage |
 | `compose.yaml` | ejecución local |
 | `.github/workflows/ci.yml` | gates CI |
 

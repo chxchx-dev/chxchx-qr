@@ -1,6 +1,5 @@
 /** Valida contenido + opciones: payload canónico, contraste, capacidad y densidad. */
 import { QR_OPTIONS_DEFAULTS, type QrContent, type QrRenderOptions } from "@acore/contracts";
-import { logoScannabilityRecommendations } from "../customization/scannability-policy.js";
 import type { QrValidationResult } from "../domain/qr-result.js";
 import { encodeMatrix } from "../renderers/qr-encoder.adapter.js";
 import {
@@ -37,16 +36,11 @@ export function validateQr(input: {
   assertWithinAbsoluteCapacity(payload);
   const matrix = encodeMatrix(payload, input.options.ecc);
   const density = classifyDensity(matrix.version);
-  const logoRecommendations = logoScannabilityRecommendations({
-    hasLogo: input.options.logo !== undefined,
-    ecc: input.options.ecc,
-    density,
-  });
   return {
     valid: true,
     canonicalPayload: payload,
     density,
     warnings: [...warnings, ...gifColorWarning(input.options)],
-    recommendations: [...densityRecommendations(density), ...logoRecommendations],
+    recommendations: densityRecommendations(density),
   };
 }

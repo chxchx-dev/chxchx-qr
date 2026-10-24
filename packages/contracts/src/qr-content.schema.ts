@@ -62,7 +62,7 @@ const textContentSchema = z.object({
   text: text(QR_CONTENT_LIMITS.textMaxLength),
 });
 
-/** URL segura: solo http/https, sin credenciales, con dominio válido (se reutiliza en vCard y QR dinámicos). */
+/** URL segura: solo http/https, sin credenciales y con dominio válido. */
 const safeUrl = (max: number) =>
   text(max).superRefine((value, ctx) => {
     let parsed: URL;
@@ -86,7 +86,7 @@ const safeUrl = (max: number) =>
     }
   });
 
-/** Esquema de URL segura compartido (destino de QR dinámicos y vCard). */
+/** Esquema de URL segura compartido por URL y vCard. */
 export const SAFE_URL_SCHEMA = safeUrl(QR_CONTENT_LIMITS.urlMaxLength);
 
 const urlContentSchema = z.object({

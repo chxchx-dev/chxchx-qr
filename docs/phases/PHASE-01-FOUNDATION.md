@@ -1,5 +1,9 @@
 # Fase 01 — Fundación del Monorepo
 
+> Registro histórico: la ejecución con Docker que describe esta fase fue
+> retirada por [ADR-008](../adr/ADR-008-no-docker.md). Las instrucciones de
+> ejecución vigentes están en el README y en `docs/10-DEPLOYMENT-OBSERVABILITY.md`.
+
 ## Objetivo
 
 Crear una base reproducible, estricta y verificable sin implementar todavía el producto.
@@ -54,8 +58,8 @@ qr-studio/
 ├─ .gitignore
 ├─ .nvmrc
 ├─ .env.example
-├─ Dockerfile.api
-├─ Dockerfile.web
+├─ apps/api/Dockerfile
+├─ apps/web/Dockerfile
 └─ compose.yaml
 ```
 
@@ -76,7 +80,7 @@ qr-studio/
 | `packages/config/src/web-config.ts` | validación env pública |
 | `packages/contracts/src/index.ts` | export vacío controlado |
 | `packages/qr-core/src/index.ts` | export vacío controlado |
-| `compose.yaml` | ejecución local |
+| `compose.yaml` | orquestación local |
 | `.github/workflows/ci.yml` | gates |
 
 ## Scripts raíz

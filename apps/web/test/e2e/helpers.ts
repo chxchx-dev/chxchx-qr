@@ -29,7 +29,7 @@ export async function waitForValidation(
   });
 }
 
-/** Comprueba que el SVG de la vista previa local se ha renderizado. */
+/** Comprueba que el SVG de vista previa generado por la API está visible. */
 export async function expectSvgPreview(page: Page): Promise<void> {
   const svg = page.locator("section[aria-labelledby='preview-title'] svg").first();
   await expect(svg).toBeVisible();

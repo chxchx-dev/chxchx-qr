@@ -18,26 +18,6 @@ export {
   escapeVCard,
   escapeWifi,
 } from "./builders/index.js";
-export {
-  buildExcavationMask,
-  computeLogoPlacement,
-  findSafeLogoPlacement,
-  type LogoPlacement,
-  type SafeLogoPlacement,
-} from "./customization/logo-placement.js";
-export {
-  assertLogoAllowed,
-  DEFAULT_LOGO_POLICY,
-  type DetectedImageFormat,
-  detectImageFormat,
-  type LogoCheckInput,
-  type LogoPolicyLimits,
-} from "./customization/logo-policy.js";
-export {
-  assertEccAllowedForLogo,
-  type LogoScannabilityInput,
-  logoScannabilityRecommendations,
-} from "./customization/scannability-policy.js";
 export type {
   BuildPayloadResult,
   CanonicalPayload,
@@ -47,10 +27,6 @@ export type {
 export {
   QrContrastTooLowError,
   QrInvertedColorsError,
-  QrLogoInvalidError,
-  QrLogoRequiresHighEccError,
-  QrLogoTooLargeError,
-  QrLogoUnsupportedFormatError,
   QrPayloadTooLargeError,
   QrRenderUnscannableError,
   QrUnsupportedFormatError,
@@ -63,11 +39,6 @@ export {
   type QrRenderOptions,
 } from "./domain/qr-options.js";
 export type { QrMatrix, QrRenderResult, QrValidationResult } from "./domain/qr-result.js";
-export {
-  logoBoxInSvgUnits,
-  renderExcavatedSvg,
-  renderSvgWithLogo,
-} from "./renderers/composite-logo.js";
 export { renderGif } from "./renderers/gif.renderer.js";
 export {
   type PngRasterizer,
@@ -103,10 +74,6 @@ export {
   parseHexColor,
   relativeLuminance,
 } from "./validation/contrast.js";
-export {
-  type RoundTripVerdict,
-  verifyMatrixRoundTrip,
-} from "./validation/rendered-roundtrip.js";
 export {
   ALLOWED_URL_SCHEMES,
   BLOCKED_URL_SCHEMES,

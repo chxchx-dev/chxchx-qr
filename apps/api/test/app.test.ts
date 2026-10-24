@@ -9,7 +9,7 @@ const openServers: Server[] = [];
 function startTestServer(): Promise<{ server: Server; baseUrl: string }> {
   const config = apiConfig({ NODE_ENV: "test", PORT: "0" });
   const app = createApp(config);
-  const server = app.listen(0);
+  const server = app.listen(0, "127.0.0.1");
   openServers.push(server);
   return once(server, "listening").then(() => {
     const address = server.address();

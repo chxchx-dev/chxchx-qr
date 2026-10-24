@@ -86,10 +86,10 @@ export function buildContentDto(type: QrContentType, draft: ContentDraft): unkno
         lng: toFiniteNumber(draft.lng),
         label: optStr(draft.label),
       };
-    case "file":
-      // El QR contiene la URL pública del archivo (ADR-003), nunca el binario:
-      // se reutiliza el pipeline de URL tal cual.
-      return { type: "url", url: str(draft.url) };
+    default: {
+      const unsupported: never = type;
+      return unsupported;
+    }
   }
 }
 

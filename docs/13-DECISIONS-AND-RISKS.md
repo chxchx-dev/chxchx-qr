@@ -1,130 +1,28 @@
-# 13 — Decisiones y Riesgos
+# 13 — Decisiones y riesgos vigentes
 
-## 1. ADR iniciales
+## Decisiones
 
-### ADR-001 — Monorepo TypeScript
+- [ADR-001](./adr/ADR-001-monorepo.md): monorepo npm workspaces.
+- [ADR-002](./adr/ADR-002-single-qr-engine.md): encoder único encapsulado en `packages/qr-core`.
+- [ADR-007](./adr/ADR-007-sharp.md): rasterización PNG con `sharp`.
+- [ADR-008](./adr/ADR-008-no-docker.md): ejecución Node/npm sin Docker.
+- [ADR-009](./adr/ADR-009-static-generator-scope.md): alcance actual de QR estáticos y API como generadora única.
 
-**Decisión:** npm workspaces con apps y packages.
+Las decisiones sobre archivos, logos, cuentas, base de datos, dinámicos y analítica describen una etapa anterior y no representan funciones disponibles.
 
-**Motivo:** compartir contratos y motor sin publicar paquetes.
+## Riesgos
 
-### ADR-002 — Un único encoder QR
+| Riesgo | Control actual |
+|---|---|
+| QR demasiado denso o grande | capacidad del encoder, estados de densidad y rechazo de overflow |
+| Contraste insuficiente | cálculo de contraste antes de render |
+| Payload de URL peligroso | solo HTTP/HTTPS, sin credenciales; nunca se consulta la URL |
+| Abuso de CPU | límites de tamaño, límites por IP y cuota menor para PNG |
+| Dato sensible en registros | no registrar cuerpos de petición; no persistencia |
+| Dependencia del encoder | encoder único encapsulado, lockfile y CI |
+| Rate limit no compartido | cuota por proceso; escalar réplicas requiere una decisión aparte |
+| Hosting incompatible con PNG nativo | comprobar soporte de `sharp` en el runtime de producción |
 
-**Decisión:** encapsular `qr` en `packages/qr-core`.
+## Criterio para ampliar alcance
 
-**Motivo:** evitar divergencia frontend/backend.
-
-### ADR-003 — Archivos mediante URL
-
-**Decisión:** almacenar archivo y codificar URL.
-
-**Motivo:** capacidad QR insuficiente y seguridad.
-
-### ADR-004 — Sin DB para estáticos
-
-**Decisión:** introducir PostgreSQL en QR dinámicos.
-
-**Motivo:** menor complejidad y costo inicial.
-
-### ADR-005 — Sesiones opacas
-
-**Decisión:** cookie HttpOnly y sesión persistida.
-
-**Motivo:** revocación, menor exposición en navegador y control.
-
-### ADR-006 — SQL explícito
-
-**Decisión:** `pg` y migraciones SQL.
-
-**Motivo:** dependencias mínimas y consultas visibles.
-
-### ADR-007 — `sharp` como único procesador gráfico
-
-**Decisión:** usarlo solo para PNG y logos.
-
-**Motivo:** consolidar rasterizado y sanitización.
-
-## 2. Matriz de riesgos
-
-| Riesgo | Probabilidad | Impacto | Control |
-|---|---:|---:|---|
-| QR personalizado no escanea | Alta | Alta | límites + round-trip |
-| Archivos usados para malware | Alta | Crítico | allowlist + re-encode + AV |
-| Dominio usado para phishing | Alta | Crítico | abuso + bloqueo + límites |
-| Dos motores generan distinto | Media | Alta | motor único |
-| Payload supera capacidad | Alta | Media | validación + enlace |
-| PNG consume CPU | Media | Alta | límites + cache + rate |
-| Redirección cae por analítica | Media | Crítico | analítica no bloqueante |
-| Pérdida de destino | Baja | Crítico | backup + DB |
-| Fuga de secretos | Media | Crítico | env + secret scan |
-| Fuerza bruta en login/registro | Alta | Alta | scrypt + rate limit + 401 genérico |
-| Robo/fijación de sesión | Media | Crítico | cookie HttpOnly + rotación + hash en DB |
-| CSRF en mutaciones | Media | Alta | Origin check + SameSite |
-| Privacidad de analítica (IP/UA) | Media | Alta | hash diario HMAC + retención + nunca IP/UA crudos |
-| Inflación de bots en métricas | Alta | Media | bot-policy + familia 'bot' separada |
-| Analítica degrada la redirección | Media | Crítico | evento no-bloqueante + test dedicado |
-| Abuso del reporte público | Media | Media | rate limit por IP + motivo mínimo |
-| Dependencia vulnerable | Media | Alta | audit + pin + updates |
-| Costos de storage | Media | Media | TTL + límites |
-| Privacidad excesiva | Media | Alta | hashes rotativos |
-| Migración bloquea tabla | Baja | Alta | expand/contract |
-
-## 3. Deuda permitida por fase
-
-Permitida solo si:
-
-- no afecta seguridad;
-- no rompe contrato;
-- está registrada;
-- tiene condición de resolución;
-- no se usa para cerrar trabajo incompleto.
-
-No se acepta como deuda:
-
-- test roto;
-- validación omitida;
-- secreto temporal;
-- upload sin cleanup;
-- acceso sin autorización;
-- TODO crítico.
-
-## 4. Formato ADR
-
-Ruta:
-
-```text
-docs/adr/ADR-XXX-title.md
-```
-
-Contenido:
-
-```md
-# Contexto
-# Fuerzas
-# Opciones
-# Decisión
-# Consecuencias
-# Plan de migración
-# Fecha y estado
-```
-
-Estados:
-
-```text
-proposed
-accepted
-superseded
-deprecated
-rejected
-```
-
-## 5. Revisión de riesgos
-
-Se revisa:
-
-- al cerrar fase;
-- antes de producción;
-- al habilitar upload;
-- al habilitar dinámicos;
-- después de incidente;
-- al añadir una dependencia crítica.
+Una nueva capacidad debe resolver una necesidad concreta del generador, conservar una web ligera y documentar cómo afecta a privacidad, dependencias, operación y mantenimiento.

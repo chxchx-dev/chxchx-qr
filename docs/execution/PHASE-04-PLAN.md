@@ -49,7 +49,7 @@ apps/web/test/e2e/logo.spec.ts + fixtures/logo.png
 - `apps/api/package.json` (multer, sharp), `apps/api/src/{app.ts, modules/qr/{qr.routes,qr.controller,qr.service,qr.http-errors}.ts}`
 - `apps/api/.env.example`, `.env.example` (raíz), `compose.yaml`
 - `apps/web/src/...`: `qr-api.client.ts`, `useQrPreview.ts`, `useQrValidation.ts`, `DownloadActions.tsx`, `GeneratorScreen.tsx`, `shared/lib/messages.ts`
-- `Dockerfile.api` (sharp en alpine, verificar prebuilt musl)
+- `apps/api/Dockerfile` (sharp en alpine, verificar prebuilt musl)
 - Docs: `05-API-CONTRACTS.md`, `12-ENVIRONMENT-CONFIG.md` (body limit), `PHASE-04-REPORT.md`
 
 ## Orden de tareas

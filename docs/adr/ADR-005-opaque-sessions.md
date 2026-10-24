@@ -1,4 +1,5 @@
 # ADR-005 — Sesiones opacas
+> **Registro histórico:** la función de este ADR está fuera del alcance vigente desde ADR-009. Se conserva como antecedente, no como guía de implementación actual.
 
 ## Contexto
 

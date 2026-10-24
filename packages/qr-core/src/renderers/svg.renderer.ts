@@ -10,8 +10,6 @@ export interface SvgRenderOptions {
   marginModules: number;
   foreground: string;
   background: string;
-  /** Módulos a NO dibujar (true = excavado, p. ej. bajo el logo). */
-  skip?: boolean[][] | undefined;
 }
 
 export function renderSvg(matrix: QrMatrix, options: SvgRenderOptions): string {
@@ -20,7 +18,7 @@ export function renderSvg(matrix: QrMatrix, options: SvgRenderOptions): string {
   const path: string[] = [];
   for (let y = 0; y < moduleCount; y += 1) {
     for (let x = 0; x < moduleCount; x += 1) {
-      if (modules[y]?.[x] === true && options.skip?.[y]?.[x] !== true) {
+      if (modules[y]?.[x] === true) {
         const px = x + options.marginModules;
         const py = y + options.marginModules;
         path.push(`M${px} ${py}h1v1h-1z`);

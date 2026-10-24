@@ -35,7 +35,7 @@ describe("renderPng (pipeline con rasterizador inyectado)", () => {
     expect(result.body).toBe(FAKE_PNG);
   });
 
-  it("sin logo envía un SVG plano y sin logoBox", async () => {
+  it("envía el SVG del QR al rasterizador", async () => {
     const { calls, rasterize } = captureRasterizer();
     await renderPng(
       {
@@ -53,31 +53,7 @@ describe("renderPng (pipeline con rasterizador inyectado)", () => {
     );
     expect(calls).toHaveLength(1);
     expect(calls[0]?.size).toBe(128);
-    expect(calls[0]?.logoBox).toBeUndefined();
-    expect(calls[0]?.logoDataUri).toBeUndefined();
-  });
-
-  it("con logo envía la caja excavada y el logoDataUri al rasterizador", async () => {
-    const { calls, rasterize } = captureRasterizer();
-    await renderPng(
-      {
-        content: { type: "text", text: "hola" },
-        options: {
-          format: "png",
-          ecc: "high",
-          size: 256,
-          marginModules: 4,
-          foreground: "#000000",
-          background: "#FFFFFF",
-        },
-        logoDataUri: "data:image/png;base64,iVBORw0KGgo=",
-      },
-      rasterize,
-    );
-    expect(calls).toHaveLength(1);
-    expect(calls[0]?.logoDataUri).toBe("data:image/png;base64,iVBORw0KGgo=");
-    expect(calls[0]?.logoBox).toBeDefined();
-    expect(calls[0]?.logoBox?.width).toBeGreaterThan(0);
+    expect(calls[0]?.svg).toContain("<svg");
   });
 
   it("rechaza contraste insuficiente antes de rasterizar", async () => {

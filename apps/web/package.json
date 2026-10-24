@@ -3,24 +3,21 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "acore-qr web application (React, Vite, and Tailwind CSS).",
+  "description": "Interfaz ligera para crear y descargar QR generados por la API.",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit -p tsconfig.json && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json",
     "test": "vitest run",
-    "test:unit": "npm run test",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "bash scripts/e2e.sh"
   },
   "dependencies": {
     "@acore/config": "*",
     "@acore/contracts": "*",
-    "@acore/qr-core": "*",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "react-router-dom": "^7.18.2"
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.49.0",

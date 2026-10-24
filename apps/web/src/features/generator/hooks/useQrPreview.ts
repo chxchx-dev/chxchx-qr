@@ -1,68 +1,49 @@
-/** Vista previa local e inmediata con qr-core (mismo motor que la API). */
+/** La API genera el SVG de vista previa; el navegador solo lo presenta. */
+import type { QrContent, QrRenderOptions } from "@acore/contracts";
+import { useEffect, useState } from "react";
+import { renderQrRequest } from "../services/qr-api.client";
 
-import type { QrRenderOptions } from "@acore/contracts";
-import {
-  buildCanonicalPayload,
-  encodeMatrix,
-  findSafeLogoPlacement,
-  type RoundTripVerdict,
-  renderSvg,
-  renderSvgWithLogo,
-} from "@acore/qr-core";
-import { useMemo } from "react";
-import type { ContentDraft, QrContentType } from "../generator.types";
-import { validateDraft } from "../lib/validate-draft";
+const PREVIEW_DEBOUNCE_MS = 650;
 
 export interface QrPreviewState {
-  /** SVG generado localmente con las opciones de exportación (paridad). */
+  status: "idle" | "loading" | "ready" | "error";
   svg: string | undefined;
-  /** Versión de la matriz (para densidad local). */
-  version: number | undefined;
-  /** Veredicto round-trip de la matriz con logo (si hay logo). */
-  roundTrip: RoundTripVerdict | undefined;
 }
 
+const INITIAL_STATE: QrPreviewState = { status: "idle", svg: undefined };
+
 export function useQrPreview(input: {
-  type: QrContentType;
-  draft: ContentDraft;
+  content: QrContent | undefined;
   options: QrRenderOptions;
 }): QrPreviewState {
-  return useMemo(() => {
-    const { dto } = validateDraft(input.type, input.draft);
-    if (dto === undefined) {
-      return { svg: undefined, version: undefined, roundTrip: undefined };
+  const [state, setState] = useState<QrPreviewState>(INITIAL_STATE);
+
+  useEffect(() => {
+    const content = input.content;
+    if (content === undefined) {
+      setState(INITIAL_STATE);
+      return;
     }
-    try {
-      const { payload } = buildCanonicalPayload(dto);
-      const matrix = encodeMatrix(payload, input.options.ecc);
-      const svgOptions = {
-        size: input.options.size,
-        marginModules: input.options.marginModules,
-        foreground: input.options.foreground,
-        background: input.options.background,
-      };
-      if (input.options.logo !== undefined) {
-        // Misma colocación segura que la API: la caja se reduce hasta que la
-        // matriz sigue decodificando (paridad preview/export).
-        const { placement, verdict } = findSafeLogoPlacement({
-          payload,
-          ecc: input.options.ecc,
+
+    setState({ status: "loading", svg: undefined });
+
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => {
+      renderQrRequest(content, { ...input.options, format: "svg" }, controller.signal)
+        .then((blob) => blob.text())
+        .then((svg) => {
+          if (!controller.signal.aborted) setState({ status: "ready", svg });
+        })
+        .catch(() => {
+          if (!controller.signal.aborted) setState({ status: "error", svg: undefined });
         });
-        return {
-          svg: renderSvgWithLogo(matrix, svgOptions, placement, input.options.logo),
-          version: matrix.version,
-          roundTrip: verdict,
-        };
-      }
-      return {
-        svg: renderSvg(matrix, svgOptions),
-        version: matrix.version,
-        roundTrip: undefined,
-      };
-    } catch {
-      // Payload sobre capacidad (overflow): la preview se queda vacía y la API
-      // validación lo bloquea con el mensaje adecuado.
-      return { svg: undefined, version: undefined, roundTrip: undefined };
-    }
-  }, [input.type, input.draft, input.options]);
+    }, PREVIEW_DEBOUNCE_MS);
+
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
+  }, [input.content, input.options]);
+
+  return state;
 }

@@ -1,18 +1,15 @@
 /**
- * Límites de render (Fase 04, docs/07 §11 y docs/12 §4).
+ * Límites del API QR.
  *
  * - Rate limit en memoria por IP (ventana deslizante simple, reset perezoso).
  *   Limitación documentada: es por proceso; con varios nodos se reparte la
  *   cuota. Suficiente para el alcance actual (sin DB ni Redis).
- * - Constantes compartidas para el presupuesto CPU/memoria de PNG y logos.
+ * - PNG tiene un límite menor porque el render consume más CPU y memoria.
  */
 import type { ApiConfig } from "@acore/config";
 import { ErrorCodes } from "@acore/contracts";
 import type { Request, RequestHandler } from "express";
 import { sendProblem } from "../../errors.js";
-
-/** Tope de píxeles a decodificar por sharp (anti-bomba de descompresión). */
-export const SHARP_LIMIT_INPUT_PIXELS = 4096 * 4096;
 
 interface Bucket {
   count: number;
@@ -24,8 +21,6 @@ export interface RateLimitOptions {
   max: number;
   /** Identificador del cliente (IP, o X-Forwarded-For si TRUST_PROXY). */
   getKey: (req: Request) => string;
-  /** Código de error del contrato (por defecto el QR; files usa FILE_RATE_LIMITED). */
-  code?: string;
 }
 
 /** Crea un limitador simple (token bucket por ventana fija con reset perezoso). */
@@ -47,7 +42,7 @@ export function createRateLimiter(options: RateLimitOptions): RequestHandler {
       sendProblem(
         res,
         429,
-        options.code ?? ErrorCodes.QR_RATE_LIMITED,
+        ErrorCodes.QR_RATE_LIMITED,
         "Demasiadas peticiones",
         `Vuelve a intentarlo en ${retryAfter} segundos.`,
       );
@@ -61,7 +56,6 @@ export interface QrRateLimiters {
   validate: RequestHandler;
   /** Elige bucket por formato: SVG/GIF (medio) vs PNG (bajo). */
   render: RequestHandler;
-  upload: RequestHandler;
 }
 
 /** Monta los limitadores por ruta según config (docs/07 §11). */
@@ -95,10 +89,5 @@ export function createQrRateLimiters(config: ApiConfig): QrRateLimiters {
       const format = (req.body as { options?: { format?: string } } | undefined)?.options?.format;
       (format === "png" ? png : render)(req, res, next);
     },
-    upload: createRateLimiter({
-      windowMs: 60 * 60_000,
-      max: config.RATE_LIMIT_UPLOAD_PER_HOUR,
-      getKey,
-    }),
   };
 }

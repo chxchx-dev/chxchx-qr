@@ -59,28 +59,3 @@ export async function renderQrRequest(
   }
   return res.blob();
 }
-
-export interface UploadedLogo {
-  dataUri: string;
-  width: number;
-  height: number;
-  format: "png";
-}
-
-/**
- * Sube un logo (multipart): la API lo valida por firma mágica y lo re-encodea
- * a PNG sin metadata. Devuelve el data URI que viaja en options.logo.
- */
-export async function uploadLogoRequest(file: File, signal: AbortSignal): Promise<UploadedLogo> {
-  const form = new FormData();
-  form.append("logo", file);
-  const res = await fetch(`${API_BASE_URL}/qr/logo`, {
-    method: "POST",
-    body: form,
-    signal,
-  });
-  if (!res.ok) {
-    throw await toApiError(res);
-  }
-  return (await res.json()) as UploadedLogo;
-}

@@ -14,7 +14,7 @@ Archivos creados:
 
 **Raíz**
 
-- `package.json` (workspaces + scripts), `package-lock.json`, `tsconfig.base.json`, `biome.json`, `.editorconfig`, `.gitignore`, `.nvmrc` (Node 24), `.env.example`, `.dockerignore`, `Dockerfile.api`, `Dockerfile.web`, `compose.yaml`, `.github/workflows/ci.yml`.
+- `package.json` (workspaces + scripts), `package-lock.json`, `tsconfig.base.json`, `biome.json`, `.editorconfig`, `.gitignore`, `.nvmrc` (Node 24), `.env.example`, `.dockerignore`, `apps/api/Dockerfile`, `apps/web/Dockerfile`, `compose.yaml`, `.github/workflows/ci.yml`.
 
 **apps/api**
 
@@ -93,7 +93,7 @@ No hay migraciones ni datos. Rollback = eliminar el código creado:
 
 ```bash
 rm -rf apps packages infra .github
-rm package.json package-lock.json tsconfig.base.json biome.json .editorconfig .gitignore .nvmrc .env.example .dockerignore Dockerfile.api Dockerfile.web compose.yaml docs/execution/PHASE-01-PLAN.md docs/execution/PHASE-01-REPORT.md
+rm package.json package-lock.json tsconfig.base.json biome.json .editorconfig .gitignore .nvmrc .env.example .dockerignore apps/api/Dockerfile apps/web/Dockerfile compose.yaml docs/execution/PHASE-01-PLAN.md docs/execution/PHASE-01-REPORT.md
 ```
 
 ## Estado final

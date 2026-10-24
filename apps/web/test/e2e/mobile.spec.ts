@@ -5,14 +5,13 @@ test("móvil: el generador se apila en una columna y el selector es accesible", 
   await page.goto("/");
 
   // Shell visible en viewport móvil.
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText(/Genera códigos QR fiables/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(/Generador de códigos QR/);
 
   // El selector de tipo existe y es navegable con teclado (flecha derecha).
   // Se acota al radiogroup de tipos (el selector de formato también usa radios).
   const typeGroup = page.getByRole("radiogroup", { name: "Tipo de contenido" });
   const radios = typeGroup.getByRole("radio");
-  // 10 tipos: los 9 clásicos + "Archivo" (Fase 05, activo en el E2E).
-  await expect(radios).toHaveCount(10);
+  await expect(radios).toHaveCount(9);
   await typeGroup.getByRole("radio", { name: /^Texto/ }).focus();
   await page.keyboard.press("ArrowRight");
   await expect(typeGroup.getByRole("radio", { name: /^URL/ })).toBeFocused();

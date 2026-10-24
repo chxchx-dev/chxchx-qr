@@ -13,21 +13,6 @@ describe("buildContentDto", () => {
     });
   });
 
-  it("file: construye un QR de URL pública (ADR-003, nunca el binario)", () => {
-    const url = "http://localhost:4000/f/token-opaco-1234567890";
-    expect(
-      buildContentDto("file", {
-        url,
-        fileName: "manual.pdf",
-        expiresAt: "2026-08-12T00:00:00.000Z",
-      }),
-    ).toEqual({
-      type: "url",
-      url,
-    });
-    expect(buildContentDto("file", {})).toEqual({ type: "url", url: "" });
-  });
-
   it("email: opcionales undefined cuando están vacíos", () => {
     expect(buildContentDto("email", { email: "a@b.dev", subject: "", body: "" })).toEqual({
       type: "email",

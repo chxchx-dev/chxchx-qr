@@ -62,38 +62,4 @@ describe("generatorReducer", () => {
     expect(next.options).toEqual(QR_OPTIONS_DEFAULTS);
     expect(next.options.size).not.toBe(4096);
   });
-
-  it("UPDATE_OPTIONS acepta un logo (data URI) y mantiene el resto de opciones", () => {
-    const state = createInitialState();
-    const logoUri = "data:image/png;base64,iVBORw0KGgo=";
-    const next = generatorReducer(state, {
-      type: "UPDATE_OPTIONS",
-      options: { logo: logoUri, ecc: "high" },
-    });
-    expect(next.options.logo).toBe(logoUri);
-    expect(next.options.ecc).toBe("high");
-    expect(next.options.size).toBe(QR_OPTIONS_DEFAULTS.size);
-  });
-
-  it("RESET_OPTIONS elimina el logo (no es parte de los defaults)", () => {
-    let state = createInitialState();
-    state = generatorReducer(state, {
-      type: "UPDATE_OPTIONS",
-      options: { logo: "data:image/png;base64,iVBORw0KGgo=", ecc: "high" },
-    });
-    const next = generatorReducer(state, { type: "RESET_OPTIONS" });
-    expect(next.options.logo).toBeUndefined();
-    expect(next.options.ecc).toBe(QR_OPTIONS_DEFAULTS.ecc);
-  });
-
-  it("UPDATE_OPTIONS con logo: undefined lo elimina (quitar logo)", () => {
-    let state = createInitialState();
-    state = generatorReducer(state, {
-      type: "UPDATE_OPTIONS",
-      options: { logo: "data:image/png;base64,iVBORw0KGgo=", ecc: "high" },
-    });
-    const next = generatorReducer(state, { type: "UPDATE_OPTIONS", options: { logo: undefined } });
-    expect(next.options.logo).toBeUndefined();
-    expect(next.options.ecc).toBe("high");
-  });
 });

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Motor QR único (encapsula a `qr`): builders por tipo, normalización, validación de capacidad/contraste y render SVG/GIF.",
+  "description": "Motor local de contenido y matrices QR; la API gestiona el renderizado final.",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -14,7 +14,6 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "npm run build && tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json",
     "test": "npm run build && vitest run",
-    "test:unit": "npm run test",
     "test:coverage": "npm run build && vitest run --coverage"
   },
   "dependencies": {

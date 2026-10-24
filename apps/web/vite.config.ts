@@ -1,31 +1,14 @@
 import { webConfig } from "@acore/config";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
-import { defineConfig, loadEnv, type Plugin } from "vite";
-
-/** Robots según ambiente: el servidor de desarrollo no indexa; el build sí. */
-function robotsMeta(): Plugin {
-  return {
-    name: "acore-robots-meta",
-    transformIndexHtml(_html, ctx) {
-      const content = ctx.server !== undefined ? "noindex,nofollow" : "index,follow";
-      return [
-        {
-          tag: "meta",
-          attrs: { name: "robots", content },
-          injectTo: "head-prepend",
-        },
-      ];
-    },
-  };
-}
+import { defineConfig, loadEnv } from "vite";
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
   webConfig(env);
 
   return {
-    plugins: [react(), tailwindcss(), robotsMeta()],
+    plugins: [react(), tailwindcss()],
     server: {
       host: "127.0.0.1",
       port: 5173,

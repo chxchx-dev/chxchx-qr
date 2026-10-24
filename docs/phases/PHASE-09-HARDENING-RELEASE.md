@@ -16,9 +16,6 @@ Cualquier feature nueva.
 
 ```text
 infra/
-├─ docker/
-├─ nginx/
-│  └─ nginx.conf
 ├─ monitoring/
 │  ├─ dashboards/
 │  └─ alerts/
@@ -55,7 +52,7 @@ docs/security/
 - rate limits;
 - dependency audit;
 - secret scan;
-- image scan;
+- deployment artifact review;
 - upload review;
 - auth review;
 - authorization review.

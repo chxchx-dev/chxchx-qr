@@ -1,94 +1,27 @@
-# Checklist — Release de Producción
+# Checklist de publicación
 
 ## Producto
 
-- [ ] Alcance congelado.
-- [ ] Textos revisados.
-- [ ] Privacidad visible.
-- [ ] Reporte de abuso.
-- [ ] Términos aplicables.
-- [ ] Límites comunicados.
+- [ ] El alcance publicado coincide con ADR-009.
+- [ ] La interfaz aclara que los códigos son estáticos.
+- [ ] Los nueve tipos de contenido y los formatos expuestos corresponden al contrato.
 
-## QR
+## Código y archivos
 
-- [ ] Vectores completos.
-- [ ] iOS.
-- [ ] Android.
-- [ ] Decoder automatizado.
-- [ ] SVG.
-- [ ] GIF.
-- [ ] PNG.
-- [ ] Logo.
-- [ ] Impresión.
-- [ ] Payload límite.
+- [ ] Formato, lint, typecheck, pruebas y build pasan en CI.
+- [ ] `package-lock.json` corresponde a los manifests.
+- [ ] La web estática apunta a la URL pública del API.
+- [ ] El runtime Node soporta las dependencias y `sharp`.
 
-## Seguridad
+## Seguridad y privacidad
 
-- [ ] Threat model.
-- [ ] Auth review.
-- [ ] Authorization review.
-- [ ] Upload review.
-- [ ] URL scheme.
-- [ ] CSP.
-- [ ] HSTS.
-- [ ] CORS.
-- [ ] CSRF.
-- [ ] Rate limits.
-- [ ] Secret scan.
-- [ ] Dependency audit.
-- [ ] Container scan.
-- [ ] SBOM.
-- [ ] Sin vulnerabilidades críticas.
-
-## Datos
-
-- [ ] Migrations staging.
-- [ ] Backup.
-- [ ] Restore.
-- [ ] Retention.
-- [ ] Cleanup.
-- [ ] DB pool.
-- [ ] Índices.
-
-## Rendimiento
-
-- [ ] Load render.
-- [ ] Load redirect.
-- [ ] PNG CPU.
-- [ ] Upload.
-- [ ] LCP móvil.
-- [ ] Bundle.
-- [ ] SLO.
-
-## Observabilidad
-
-- [ ] Logs JSON.
-- [ ] Request ID.
-- [ ] Dashboard.
-- [ ] Alertas.
-- [ ] Health live.
-- [ ] Health ready.
-- [ ] Certificados.
-- [ ] Disco temporal.
-
-## Despliegue
-
-- [ ] Imágenes inmutables.
-- [ ] Config producción.
-- [ ] Secrets.
-- [ ] Staging.
-- [ ] Smoke staging.
-- [ ] Aprobación.
-- [ ] Deploy.
-- [ ] Smoke producción.
-- [ ] Rollback listo.
+- [ ] CORS restringido al origen publicado.
+- [ ] No se registran cuerpos de petición.
+- [ ] Rate limits ajustados al despliegue.
+- [ ] Auditoría de dependencias y escaneo de secretos pasan.
 
 ## Operación
 
-- [ ] Runbook.
-- [ ] Incident response.
-- [ ] Abuse handling.
-- [ ] Contactos.
-- [ ] Restore owner.
-- [ ] On-call.
-- [ ] Post-release review programado.
+- [ ] `/health/live` y `/health/ready` responden.
+- [ ] HTTPS está habilitado.
+- [ ] Hay una versión previa disponible para rollback.

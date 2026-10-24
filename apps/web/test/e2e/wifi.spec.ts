@@ -29,6 +29,6 @@ test("WiFi: la contraseña no persiste al cambiar de red abierta ni al cambiar d
   await expect(page.getByLabel("Nombre de la red (SSID)")).toHaveValue("MiRed");
   await expect(page.getByLabel("Contraseña")).toHaveValue("secreto456");
 
-  // El aviso de privacidad del WiFi está visible.
-  await expect(page.getByText(/no se guarda ni se envía a analítica/)).toBeVisible();
+  // La contraseña se procesa solo para generar el QR.
+  await expect(page.getByText(/se procesa solo para generar el QR/)).toBeVisible();
 });

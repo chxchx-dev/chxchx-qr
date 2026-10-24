@@ -13,8 +13,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "npm run build && tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json",
-    "test": "npm run build && vitest run",
-    "test:unit": "npm run test"
+    "test": "npm run build && vitest run"
   },
   "dependencies": {
     "zod": "^4.0.0"

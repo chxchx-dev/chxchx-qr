@@ -10,8 +10,7 @@ export type QrContentType =
   | "wifi"
   | "vcard"
   | "calendar"
-  | "geo"
-  | "file";
+  | "geo";
 
 export const CONTENT_TYPES: readonly QrContentType[] = [
   "text",
@@ -23,7 +22,6 @@ export const CONTENT_TYPES: readonly QrContentType[] = [
   "vcard",
   "calendar",
   "geo",
-  "file",
 ] as const;
 
 /** Valores del formulario por tipo (números como string; solo en memoria). */
