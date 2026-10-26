@@ -116,6 +116,12 @@ describe("buildContentDto", () => {
       lng: undefined,
       label: undefined,
     });
+    expect(buildContentDto("geo", { lat: true, lng: false })).toEqual({
+      type: "geo",
+      lat: undefined,
+      lng: undefined,
+      label: undefined,
+    });
   });
 });
 

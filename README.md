@@ -25,11 +25,12 @@ Abre la web en `http://localhost:5173`; la API queda en `http://localhost:4000`.
 ## Comandos
 
 ```bash
-npm run build       # compila la API y la web
-npm run typecheck   # verifica los tipos
-npm run lint        # revisa el formato y el código
-npm test            # ejecuta las pruebas
-npm run test:e2e    # ejecuta las pruebas de navegador
+npm run build         # compila la API y la web
+npm run typecheck     # verifica los tipos
+npm run lint          # revisa el formato y el código
+npm test              # ejecuta las pruebas
+npm run test:coverage # muestra la cobertura por paquete
+npm run test:e2e      # ejecuta las pruebas de navegador
 ```
 
 ## Despliegue
