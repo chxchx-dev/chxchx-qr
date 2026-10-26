@@ -58,7 +58,7 @@ export interface QrRateLimiters {
   render: RequestHandler;
 }
 
-/** Monta los limitadores por ruta según config (docs/07 §11). */
+/** Monta los limitadores por ruta según la configuración de la API. */
 export function createQrRateLimiters(config: ApiConfig): QrRateLimiters {
   const getKey = (req: Request): string => {
     const forwarded = req.header("x-forwarded-for");

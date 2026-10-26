@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { postJson, startTestServer } from "./helpers.js";
 
-describe("rate limit (docs/07 §11)", () => {
+describe("rate limit", () => {
   it("limita el render PNG a la cuota por minuto (429 QR_RATE_LIMITED)", async () => {
     const { baseUrl } = await startTestServer({
       RATE_LIMIT_PNG_PER_MINUTE: "2",

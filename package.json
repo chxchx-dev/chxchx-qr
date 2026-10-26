@@ -2,8 +2,9 @@
   "name": "acore-qr",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "type": "module",
-  "description": "Generador local de QR estáticos con una API como motor y una web ligera.",
+  "description": "Aplicación web para crear códigos QR estáticos con una API local.",
   "workspaces": [
     "apps/*",
     "packages/*"

@@ -1,57 +1,43 @@
 # acore-qr
 
-Generador de **QR estáticos**. La API valida el contenido y genera la imagen en el servidor; la web es una interfaz pequeña para completar el formulario, ver el resultado y descargarlo. La generación no llama a servicios QR externos y no necesita cuentas, base de datos ni Docker.
+Aplicación web para crear códigos QR estáticos. Incluye una interfaz React y una API Node.js que valida el contenido y genera archivos SVG, PNG y GIF. La generación se ejecuta localmente en la API; las solicitudes no se guardan ni se envían a un servicio QR externo.
 
-## Qué incluye
+## Funciones
 
-- Nueve tipos de contenido: texto, URL, correo, teléfono, SMS, WiFi, contacto vCard, evento y ubicación.
-- Opciones de corrección de errores, tamaño, margen y colores con contraste validado.
-- Salidas SVG, PNG y GIF.
-- Vista previa y descarga generadas por la misma API.
-- Contratos y motor QR locales al monorepo; no se persisten los datos enviados.
-
-El generador usa el paquete local `qr` desde `packages/qr-core`. Ese paquete crea las matrices y formatos QR sin consultar una API remota. PNG se rasteriza en la API con `sharp` y se verifica con `jsqr`.
-
-## Estructura
-
-- `apps/web`: formulario React y presentación de la vista previa.
-- `apps/api`: validación, generación, renderizado y descargas.
-- `packages/qr-core`: builders de contenido y motor QR.
-- `packages/contracts`: esquemas compartidos para contenido y opciones.
-- `packages/config`: validación de variables de entorno.
-- `docs`: alcance vigente, contratos y decisiones. Los informes de fases antiguas quedan como archivo histórico.
+- QR para texto, URL, correo, teléfono, SMS, WiFi, contacto vCard, evento y ubicación.
+- Vista previa y descarga en SVG, PNG o GIF.
+- Ajustes de tamaño, margen, corrección de errores y colores.
 
 ## Requisitos
 
-- Node.js 24 (el `package.json` acepta `>=20.19.0`).
+- Node.js 24 (se admite `>=20.19.0`).
 - npm.
 
-## Desarrollo local
+## Instalar y ejecutar
 
 ```bash
 npm ci
-cp apps/api/.env.example apps/api/.env
-cp apps/web/.env.example apps/web/.env
 npm run dev
 ```
 
-La web abre en `http://localhost:5173` y la API en `http://localhost:4000`. La configuración de ejemplo es suficiente para empezar; no hacen falta servicios adicionales.
+Abre la web en `http://localhost:5173`; la API queda en `http://localhost:4000`. La configuración predeterminada basta para desarrollo. Consulta [`apps/api/.env.example`](apps/api/.env.example) y [`apps/web/.env.example`](apps/web/.env.example) para personalizarla.
 
 ## Comandos
 
 ```bash
-npm run dev          # inicia web y API
-npm run build        # compila paquetes, API y web
-npm run typecheck    # comprueba los tipos
-npm run lint         # Biome
-npm test             # pruebas de paquetes y aplicaciones
-npm run test:e2e     # flujo web completo con Playwright
+npm run build       # compila la API y la web
+npm run typecheck   # verifica los tipos
+npm run lint        # revisa el formato y el código
+npm test            # ejecuta las pruebas
+npm run test:e2e    # ejecuta las pruebas de navegador
 ```
 
-## Alcance
+## Despliegue
 
-Este proyecto genera códigos estáticos: cada QR contiene directamente el contenido indicado y no es editable ni rastreable después de descargarlo. No incluye QR dinámicos, archivos alojados, cuentas, historial ni analítica. El alcance y las siguientes decisiones están en [`docs/README.md`](docs/README.md).
+Es una aplicación alojable, no un paquete npm independiente. Para producción, ejecuta `npm ci` y `npm run build`; publica `apps/web/dist` como sitio estático y ejecuta la API con `npm run start -w apps/api`. Configura `VITE_API_BASE_URL` durante el build de la web y `WEB_ORIGIN` en la API. Los valores para un mismo dominio o dominios separados están en [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
+
+La API ofrece `GET /health/live` y `GET /health/ready`. El detalle de validación y generación está en [`docs/API.md`](docs/API.md).
 
 ## Licencia
 
-Proyecto privado. La distribución del proyecto se rige por la decisión de su propietario; las licencias de las dependencias se detallan en [`docs/11-DEPENDENCY-POLICY.md`](docs/11-DEPENDENCY-POLICY.md).
+[MIT](LICENSE).
