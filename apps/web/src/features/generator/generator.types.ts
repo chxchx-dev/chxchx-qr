@@ -1,5 +1,5 @@
 /** Tipos del generador: estado del formulario, opciones y acciones del reducer. */
-import type { QrRenderOptions } from "@acore/contracts";
+import type { QrRenderOptions } from "@chxchx/contracts";
 
 export type QrContentType =
   | "text"

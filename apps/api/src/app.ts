@@ -1,5 +1,5 @@
 import crypto from "node:crypto";
-import type { ApiConfig } from "@acore/config";
+import type { ApiConfig } from "@chxchx/config";
 import express, { type Express } from "express";
 import { createCorsMiddleware } from "./cors.js";
 import { createErrorHandler, notFoundHandler } from "./errors.js";

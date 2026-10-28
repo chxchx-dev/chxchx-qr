@@ -1,5 +1,5 @@
-/** Tipos de dominio del contenido QR (DTO validado vive en @acore/contracts). */
-import type { QrContent } from "@acore/contracts";
+/** Tipos de dominio del contenido QR (DTO validado vive en @chxchx/contracts). */
+import type { QrContent } from "@chxchx/contracts";
 
 export type { QrContent };
 

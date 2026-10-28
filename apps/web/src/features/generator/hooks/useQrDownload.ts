@@ -1,5 +1,5 @@
 /** Descarga por la API: blob → ObjectURL → <a download> → revoke + anuncio. */
-import type { QrContent, QrRenderOptions } from "@acore/contracts";
+import type { QrContent, QrRenderOptions } from "@chxchx/contracts";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ui } from "../../../shared/lib/messages";
 import { sanitizeFilename } from "../../../shared/lib/sanitize-filename";

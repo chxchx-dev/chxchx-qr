@@ -25,10 +25,10 @@ describe("builders", () => {
   });
 
   it("email usa URLSearchParams y omite vacíos", () => {
-    expect(buildEmail({ type: "email", email: "hola@acore.dev" })).toBe("mailto:hola@acore.dev");
+    expect(buildEmail({ type: "email", email: "hola@example.com" })).toBe("mailto:hola@example.com");
     expect(
-      buildEmail({ type: "email", email: "hola@acore.dev", subject: "Asunto", body: "Cuerpo" }),
-    ).toBe("mailto:hola@acore.dev?subject=Asunto&body=Cuerpo");
+      buildEmail({ type: "email", email: "hola@example.com", subject: "Asunto", body: "Cuerpo" }),
+    ).toBe("mailto:hola@example.com?subject=Asunto&body=Cuerpo");
   });
 
   it("phone limpia separadores y conserva +", () => {
@@ -63,9 +63,9 @@ describe("builders", () => {
       type: "vcard",
       name: "Ana",
       lastname: "García",
-      org: "Acore",
+      org: "Chxchx",
       phone: "+34 600 123 456",
-      email: "ana@acore.dev",
+      email: "ana@example.com",
       address: "Calle 1, 2",
       note: "Nota con, coma",
     });
@@ -88,7 +88,7 @@ describe("builders", () => {
       location: "Sala 1",
     });
     expect(ical).toBe(
-      "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//acore-qr//EN\r\nBEGIN:VEVENT\r\n" +
+      "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//chxchx-qr//EN\r\nBEGIN:VEVENT\r\n" +
         "SUMMARY:Reunión\\, equipo\r\nDTSTART:20260805T150000Z\r\nDTEND:20260805T160000Z\r\n" +
         "LOCATION:Sala 1\r\nEND:VEVENT\r\nEND:VCALENDAR",
     );

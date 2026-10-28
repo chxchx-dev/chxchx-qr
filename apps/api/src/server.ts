@@ -1,5 +1,5 @@
 import { existsSync } from "node:fs";
-import { apiConfig } from "@acore/config";
+import { apiConfig } from "@chxchx/config";
 import { createApp } from "./app.js";
 
 const SHUTDOWN_TIMEOUT_MS = 10_000;

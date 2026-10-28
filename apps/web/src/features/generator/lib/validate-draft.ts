@@ -1,5 +1,5 @@
 /** Validación local del draft con el esquema compartido (contrato). */
-import { type QrContent, qrContentSchema } from "@acore/contracts";
+import { type QrContent, qrContentSchema } from "@chxchx/contracts";
 import type { ZodError } from "zod";
 import type { ContentDraft, QrContentType } from "../generator.types";
 import { buildContentDto, hasAnyInput } from "./build-dto";

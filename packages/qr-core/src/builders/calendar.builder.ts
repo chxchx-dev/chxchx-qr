@@ -14,7 +14,7 @@ export function buildCalendar(content: Extract<QrContent, { type: "calendar" }>)
   const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//acore-qr//EN",
+    "PRODID:-//chxchx-qr//EN",
     "BEGIN:VEVENT",
     `SUMMARY:${escapeICal(content.summary)}`,
     `DTSTART:${toICalDateTime(content.start)}`,

@@ -1,18 +1,18 @@
-import type { QrContent, QrRenderOptions } from "@acore/contracts";
-import { buildCanonicalPayload, decodeRgbImage } from "@acore/qr-core";
+import type { QrContent, QrRenderOptions } from "@chxchx/contracts";
+import { buildCanonicalPayload, decodeRgbImage } from "@chxchx/qr-core";
 import sharp from "sharp";
 import { describe, expect, it } from "vitest";
 import { postJson, startTestServer } from "./helpers.js";
 
 const CONTENT_CASES: QrContent[] = [
-  { type: "text", text: "Acore QR acceptance" },
+  { type: "text", text: "Chxchx QR acceptance" },
   { type: "url", url: "https://example.com/acceptance?source=qr" },
   { type: "email", email: "hola@example.com", subject: "Prueba", body: "QR estático" },
   { type: "phone", phone: "+573001234567" },
   { type: "sms", phone: "+573001234567", body: "Cita mañana a las 10" },
   {
     type: "wifi",
-    ssid: "Acore-WiFi",
+    ssid: "Chxchx-WiFi",
     password: "prueba-qr-2026",
     networkType: "WPA",
     hidden: false,

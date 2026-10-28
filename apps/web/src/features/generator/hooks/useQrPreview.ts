@@ -1,5 +1,5 @@
 /** La API genera el SVG de vista previa; el navegador solo lo presenta. */
-import type { QrContent, QrRenderOptions } from "@acore/contracts";
+import type { QrContent, QrRenderOptions } from "@chxchx/contracts";
 import { useEffect, useState } from "react";
 import { renderQrRequest } from "../services/qr-api.client";
 

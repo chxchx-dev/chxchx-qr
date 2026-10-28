@@ -1,6 +1,6 @@
 import { once } from "node:events";
 import type { Server } from "node:http";
-import { apiConfig } from "@acore/config";
+import { apiConfig } from "@chxchx/config";
 import { afterEach, describe, expect, it } from "vitest";
 import { createApp } from "../src/app.js";
 

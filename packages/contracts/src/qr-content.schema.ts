@@ -3,7 +3,7 @@
  *
  * Normalización: cada string se normaliza a Unicode NFC y se recorta antes de
  * validar (transformaciones transparentes). El payload canónico se construye
- * en `@acore/qr-core` a partir de estos DTO ya validados.
+ * en `@chxchx/qr-core` a partir de estos DTO ya validados.
  */
 import { z } from "zod";
 

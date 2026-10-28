@@ -1,5 +1,5 @@
 /** Cliente de la API QR. Todas las llamadas aceptan AbortSignal. */
-import type { QrContent, QrRenderOptions, QrValidationResponse } from "@acore/contracts";
+import type { QrContent, QrRenderOptions, QrValidationResponse } from "@chxchx/contracts";
 
 const API_BASE_URL: string = import.meta.env.VITE_API_BASE_URL ?? "/api/v1";
 

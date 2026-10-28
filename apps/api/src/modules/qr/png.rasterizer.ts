@@ -1,5 +1,5 @@
 /** Rasteriza en PNG el SVG generado por qr-core y comprueba su lectura final. */
-import { decodeRgbImage, type PngRasterizer, QrRenderUnscannableError } from "@acore/qr-core";
+import { decodeRgbImage, type PngRasterizer, QrRenderUnscannableError } from "@chxchx/qr-core";
 import sharp from "sharp";
 
 const MAX_INPUT_PIXELS = 4096 * 4096;

@@ -1,5 +1,5 @@
 {
-  "name": "@acore/web",
+  "name": "@chxchx/web",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -14,8 +14,8 @@
     "test:e2e": "bash scripts/e2e.sh"
   },
   "dependencies": {
-    "@acore/config": "*",
-    "@acore/contracts": "*",
+    "@chxchx/config": "*",
+    "@chxchx/contracts": "*",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

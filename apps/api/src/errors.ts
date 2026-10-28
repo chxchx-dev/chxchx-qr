@@ -1,4 +1,4 @@
-import type { ApiConfig } from "@acore/config";
+import type { ApiConfig } from "@chxchx/config";
 import type { ErrorRequestHandler, RequestHandler, Response } from "express";
 
 interface HttpErrorLike {

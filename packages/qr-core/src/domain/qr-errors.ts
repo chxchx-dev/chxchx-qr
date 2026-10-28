@@ -1,5 +1,5 @@
 /** Errores de dominio del motor QR. Los códigos son parte del contrato público. */
-import { ErrorCodes } from "@acore/contracts";
+import { ErrorCodes } from "@chxchx/contracts";
 
 export class QrPayloadTooLargeError extends Error {
   readonly code: string = ErrorCodes.QR_PAYLOAD_TOO_LARGE;

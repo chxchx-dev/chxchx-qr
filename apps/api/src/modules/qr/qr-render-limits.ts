@@ -6,8 +6,8 @@
  *   cuota. Suficiente para el alcance actual (sin DB ni Redis).
  * - PNG tiene un límite menor porque el render consume más CPU y memoria.
  */
-import type { ApiConfig } from "@acore/config";
-import { ErrorCodes } from "@acore/contracts";
+import type { ApiConfig } from "@chxchx/config";
+import { ErrorCodes } from "@chxchx/contracts";
 import type { Request, RequestHandler } from "express";
 import { sendProblem } from "../../errors.js";
 

@@ -1,4 +1,4 @@
-import { QR_OPTIONS_DEFAULTS } from "@acore/contracts";
+import { QR_OPTIONS_DEFAULTS } from "@chxchx/contracts";
 import { describe, expect, it } from "vitest";
 import {
   createInitialState,

@@ -40,13 +40,13 @@ describe("qrContentSchema", () => {
   });
 
   it("email valida formato", () => {
-    expect(parse({ type: "email", email: "hola@acore.dev" }).success).toBe(true);
+    expect(parse({ type: "email", email: "hola@example.com" }).success).toBe(true);
     expect(parse({ type: "email", email: "no-es-correo" }).success).toBe(false);
   });
 
   it("vcard rechaza esquemas peligrosos en su url", () => {
     const base = { type: "vcard", name: "Ana" };
-    expect(parse({ ...base, url: "https://acore.dev" }).success).toBe(true);
+    expect(parse({ ...base, url: "https://example.com" }).success).toBe(true);
     expect(parse({ ...base, url: "javascript:alert(1)" }).success).toBe(false);
     expect(parse({ ...base, url: "data:text/html,x" }).success).toBe(false);
   });

@@ -30,7 +30,7 @@ const CONTENT_TYPES: Array<{ label: string; fill: (page: Page) => Promise<void> 
   {
     label: "WiFi",
     fill: async (page) => {
-      await page.getByLabel("Nombre de la red (SSID)").fill("Acore-WiFi");
+      await page.getByLabel("Nombre de la red (SSID)").fill("Chxchx-WiFi");
       await page.getByLabel("Contraseña").fill("prueba-qr-2026");
     },
   },

@@ -1,7 +1,7 @@
 /**
  * Adaptador sobre el paquete `qr` (ADR-002). Este es el ÚNICO archivo del
  * monorepo que importa el encoder `qr`; el resto del código usa los tipos y
- * funciones de `@acore/qr-core`.
+ * funciones de `@chxchx/qr-core`.
  *
  * - encodeMatrix: matriz de módulos puros (sin zona silenciosa).
  * - renderGifBytes: GIF87a directo del encoder.

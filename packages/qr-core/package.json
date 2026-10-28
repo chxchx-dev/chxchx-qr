@@ -1,5 +1,5 @@
 {
-  "name": "@acore/qr-core",
+  "name": "@chxchx/qr-core",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -17,7 +17,7 @@
     "test:coverage": "npm run build && vitest run --coverage"
   },
   "dependencies": {
-    "@acore/contracts": "*",
+    "@chxchx/contracts": "*",
     "jsqr": "^1.4.0",
     "qr": "^0.6.0"
   },

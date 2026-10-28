@@ -1,11 +1,11 @@
-import { ErrorCodes } from "@acore/contracts";
+import { ErrorCodes } from "@chxchx/contracts";
 import {
   QrContrastTooLowError,
   QrInvertedColorsError,
   QrPayloadTooLargeError,
   QrRenderUnscannableError,
   QrUnsupportedFormatError,
-} from "@acore/qr-core";
+} from "@chxchx/qr-core";
 import type { NextFunction, Response } from "express";
 import { describe, expect, it, vi } from "vitest";
 import { handleQrError } from "../../../../src/modules/qr/qr.http-errors.js";

@@ -1,5 +1,5 @@
 /** Renderiza el QR a SVG o GIF (PNG servidor fuera de alcance en esta fase). */
-import type { QrContent, QrRenderOptions } from "@acore/contracts";
+import type { QrContent, QrRenderOptions } from "@chxchx/contracts";
 import { QrUnsupportedFormatError } from "../domain/qr-errors.js";
 import type { QrRenderResult } from "../domain/qr-result.js";
 import { renderGif } from "../renderers/gif.renderer.js";

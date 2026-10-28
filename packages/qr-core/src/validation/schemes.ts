@@ -1,5 +1,5 @@
-/** Esquemas URL permitidos y bloqueados (fuente: @acore/contracts). */
-import { urlSchemeCheck } from "@acore/contracts";
+/** Esquemas URL permitidos y bloqueados (fuente: @chxchx/contracts). */
+import { urlSchemeCheck } from "@chxchx/contracts";
 
 export const ALLOWED_URL_SCHEMES = urlSchemeCheck.allowed;
 export const BLOCKED_URL_SCHEMES = urlSchemeCheck.blocked;

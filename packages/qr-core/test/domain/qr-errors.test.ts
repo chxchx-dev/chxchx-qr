@@ -1,4 +1,4 @@
-import { ErrorCodes } from "@acore/contracts";
+import { ErrorCodes } from "@chxchx/contracts";
 import { describe, expect, it } from "vitest";
 import {
   QrContrastTooLowError,

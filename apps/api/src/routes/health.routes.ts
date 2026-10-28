@@ -1,4 +1,4 @@
-import type { ApiConfig } from "@acore/config";
+import type { ApiConfig } from "@chxchx/config";
 import { Router } from "express";
 
 export function createHealthRouter(config: ApiConfig): Router {

@@ -1,5 +1,5 @@
 /** Reducer puro del generador (sin efectos ni persistencia). */
-import { QR_OPTIONS_DEFAULTS } from "@acore/contracts";
+import { QR_OPTIONS_DEFAULTS } from "@chxchx/contracts";
 import type { GeneratorAction, GeneratorState } from "../generator.types";
 
 export function createInitialState(): GeneratorState {

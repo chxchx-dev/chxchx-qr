@@ -1,4 +1,4 @@
-import { QR_CONTENT_LIMITS } from "@acore/contracts";
+import { QR_CONTENT_LIMITS } from "@chxchx/contracts";
 import { TextAreaField } from "../../../shared/components/Field";
 import { ui } from "../../../shared/lib/messages";
 import type { FieldsProps } from "./forms.types";

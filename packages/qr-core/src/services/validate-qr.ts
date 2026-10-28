@@ -1,5 +1,5 @@
 /** Valida contenido + opciones: payload canónico, contraste, capacidad y densidad. */
-import { QR_OPTIONS_DEFAULTS, type QrContent, type QrRenderOptions } from "@acore/contracts";
+import { QR_OPTIONS_DEFAULTS, type QrContent, type QrRenderOptions } from "@chxchx/contracts";
 import type { QrValidationResult } from "../domain/qr-result.js";
 import { encodeMatrix } from "../renderers/qr-encoder.adapter.js";
 import {

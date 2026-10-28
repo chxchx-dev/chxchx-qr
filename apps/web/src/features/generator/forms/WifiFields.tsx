@@ -1,4 +1,4 @@
-import { QR_CONTENT_LIMITS } from "@acore/contracts";
+import { QR_CONTENT_LIMITS } from "@chxchx/contracts";
 import {
   PasswordField,
   SelectField,

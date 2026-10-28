@@ -1,4 +1,4 @@
-import { apiConfig } from "@acore/config";
+import { apiConfig } from "@chxchx/config";
 import { describe, expect, it } from "vitest";
 
 describe("apiConfig", () => {

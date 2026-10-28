@@ -1,5 +1,5 @@
 /** Validación: local (esquema compartido) + API (debounce corto, abort de requests viejos). */
-import { ErrorCodes, type QrContent, type QrDensity, type QrRenderOptions } from "@acore/contracts";
+import { ErrorCodes, type QrContent, type QrDensity, type QrRenderOptions } from "@chxchx/contracts";
 import { useEffect, useRef, useState } from "react";
 import { ui } from "../../../shared/lib/messages";
 import type { ContentDraft, QrContentType } from "../generator.types";

@@ -1,5 +1,5 @@
 /** PNG pipeline agnóstico: qr-core crea SVG y la API inyecta su rasterizador. */
-import type { QrContent, QrRenderOptions } from "@acore/contracts";
+import type { QrContent, QrRenderOptions } from "@chxchx/contracts";
 import type { QrRenderResult } from "../domain/qr-result.js";
 import { buildCanonicalPayload } from "../services/build-canonical-payload.js";
 import { assertWithinAbsoluteCapacity } from "../validation/capacity.js";

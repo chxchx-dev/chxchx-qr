@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const webConfigSchema = z.object({
   VITE_API_BASE_URL: z.union([z.url(), z.literal("/api/v1")]).default("/api/v1"),
-  VITE_APP_NAME: z.string().min(1).default("acore-qr"),
+  VITE_APP_NAME: z.string().min(1).default("chxchx-qr"),
 });
 
 export type WebConfig = z.infer<typeof webConfigSchema>;

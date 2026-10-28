@@ -1,11 +1,11 @@
-import { webConfig } from "@acore/config";
+import { webConfig } from "@chxchx/config";
 import { describe, expect, it } from "vitest";
 
 describe("webConfig", () => {
   it("aplica valores por defecto", () => {
     const config = webConfig({});
     expect(config.VITE_API_BASE_URL).toBe("/api/v1");
-    expect(config.VITE_APP_NAME).toBe("acore-qr");
+    expect(config.VITE_APP_NAME).toBe("chxchx-qr");
   });
 
   it("acepta una URL relativa servida por el proxy local", () => {

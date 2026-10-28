@@ -1,5 +1,5 @@
 /** Tipos de dominio de las opciones de renderizado. */
-import { QR_OPTIONS_DEFAULTS, type QrRenderOptions } from "@acore/contracts";
+import { QR_OPTIONS_DEFAULTS, type QrRenderOptions } from "@chxchx/contracts";
 
 export type { QrRenderOptions };
 

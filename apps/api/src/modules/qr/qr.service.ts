@@ -3,8 +3,8 @@ import {
   QR_OPTIONS_DEFAULTS as DEFAULT_OPTIONS,
   type QrContent,
   type QrRenderOptions,
-} from "@acore/contracts";
-import { buildCanonicalPayload, type QrRenderResult, renderPng, renderQr } from "@acore/qr-core";
+} from "@chxchx/contracts";
+import { buildCanonicalPayload, type QrRenderResult, renderPng, renderQr } from "@chxchx/qr-core";
 import { sharpPngRasterizer, verifyPngPayload } from "./png.rasterizer.js";
 
 export interface QrRequestInput {

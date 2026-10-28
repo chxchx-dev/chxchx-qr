@@ -1,5 +1,5 @@
 /** Rutas QR (sin lógica de negocio; solo cableado route → controller). */
-import type { ApiConfig } from "@acore/config";
+import type { ApiConfig } from "@chxchx/config";
 import { Router } from "express";
 import { createQrController } from "./qr.controller.js";
 import { createQrRateLimiters } from "./qr-render-limits.js";

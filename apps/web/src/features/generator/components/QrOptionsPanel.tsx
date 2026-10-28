@@ -1,5 +1,5 @@
 /** Panel de personalización: ECC explicado, tamaño, margen, colores y restaurar. */
-import type { QrRenderOptions } from "@acore/contracts";
+import type { QrRenderOptions } from "@chxchx/contracts";
 import { ColorField, SelectField } from "../../../shared/components/Field";
 import { ui } from "../../../shared/lib/messages";
 

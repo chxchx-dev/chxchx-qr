@@ -1,4 +1,4 @@
-import { webConfig } from "@acore/config";
+import { webConfig } from "@chxchx/config";
 import { GeneratorScreen } from "../features/generator/components/GeneratorScreen";
 import { ui } from "../shared/lib/messages";
 import { Providers } from "./providers";

@@ -1,5 +1,5 @@
 /** Vectores estables de contenido para pruebas (09-TESTING-QUALITY §3). */
-import type { QrContent } from "@acore/contracts";
+import type { QrContent } from "@chxchx/contracts";
 
 export interface RoundTripFixture {
   name: string;
@@ -17,7 +17,7 @@ export const roundTripFixtures: RoundTripFixture[] = [
     name: "email-con-asunto",
     content: {
       type: "email",
-      email: "hola@acore.dev",
+      email: "hola@example.com",
       subject: "Asunto de prueba",
       body: "Cuerpo del mensaje",
     },
@@ -44,11 +44,11 @@ export const roundTripFixtures: RoundTripFixture[] = [
       type: "vcard",
       name: "Ana",
       lastname: "García",
-      org: "Acore",
+      org: "Chxchx",
       title: "Desarrolladora",
       phone: "+34 600 123 456",
-      email: "ana@acore.dev",
-      url: "https://acore.dev",
+      email: "ana@example.com",
+      url: "https://example.com",
       address: "Calle 1, 2; Ciudad",
       note: "Nota con, coma y; punto",
     },

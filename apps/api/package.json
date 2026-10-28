@@ -1,5 +1,5 @@
 {
-  "name": "@acore/api",
+  "name": "@chxchx/api",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -13,9 +13,9 @@
     "test:coverage": "npm run build && vitest run --coverage"
   },
   "dependencies": {
-    "@acore/config": "*",
-    "@acore/contracts": "*",
-    "@acore/qr-core": "*",
+    "@chxchx/config": "*",
+    "@chxchx/contracts": "*",
+    "@chxchx/qr-core": "*",
     "express": "^5.1.0",
     "sharp": "^0.35.3",
     "zod": "^4.0.0"

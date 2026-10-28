@@ -1,6 +1,6 @@
 /** Controlador HTTP para validar y generar QR estáticos. */
-import { ErrorCodes, qrContentSchema, qrOptionsSchema } from "@acore/contracts";
-import { validateQr } from "@acore/qr-core";
+import { ErrorCodes, qrContentSchema, qrOptionsSchema } from "@chxchx/contracts";
+import { validateQr } from "@chxchx/qr-core";
 import type { NextFunction, Request, Response } from "express";
 import { z } from "zod";
 import { sendProblem } from "../../errors.js";

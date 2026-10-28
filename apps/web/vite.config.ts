@@ -1,4 +1,4 @@
-import { webConfig } from "@acore/config";
+import { webConfig } from "@chxchx/config";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig, loadEnv } from "vite";
