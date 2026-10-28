@@ -25,7 +25,9 @@ describe("builders", () => {
   });
 
   it("email usa URLSearchParams y omite vacíos", () => {
-    expect(buildEmail({ type: "email", email: "hola@example.com" })).toBe("mailto:hola@example.com");
+    expect(buildEmail({ type: "email", email: "hola@example.com" })).toBe(
+      "mailto:hola@example.com",
+    );
     expect(
       buildEmail({ type: "email", email: "hola@example.com", subject: "Asunto", body: "Cuerpo" }),
     ).toBe("mailto:hola@example.com?subject=Asunto&body=Cuerpo");
