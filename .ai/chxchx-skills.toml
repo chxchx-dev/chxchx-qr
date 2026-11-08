@@ -1,0 +1,10 @@
+version = 1
+enabled = [
+  "api-design",
+  "code-review",
+  "react",
+  "security-review",
+  "testing",
+  "typescript-engineering",
+  "ui-ux-design",
+]
