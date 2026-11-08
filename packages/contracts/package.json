@@ -4,6 +4,12 @@
   "private": true,
   "type": "module",
   "description": "Esquemas y contratos compartidos para el generador de QR estáticos.",
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "files": [
+    "dist"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",

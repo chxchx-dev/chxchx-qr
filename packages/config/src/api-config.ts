@@ -5,6 +5,9 @@ const envBoolean = z
   .transform((value) => value === "true");
 
 const envInteger = z.coerce.number().int();
+const proxyHops = envInteger.refine((hops) => hops >= 1, {
+  message: "debe ser al menos 1",
+});
 
 /** Ajustes mínimos del servidor que genera y valida los QR estáticos. */
 export const apiConfigSchema = z.object({
@@ -17,6 +20,7 @@ export const apiConfigSchema = z.object({
   APP_VERSION: z.string().min(1).default("0.1.0"),
   WEB_ORIGIN: z.url().default("http://localhost:5173"),
   TRUST_PROXY: envBoolean.default(false),
+  TRUST_PROXY_HOPS: proxyHops.default(1),
   REQUEST_BODY_LIMIT: z.string().min(1).default("32kb"),
   RATE_LIMIT_VALIDATE_PER_MINUTE: envInteger.default(120),
   RATE_LIMIT_RENDER_PER_MINUTE: envInteger.default(60),

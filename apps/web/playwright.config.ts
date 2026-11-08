@@ -1,8 +1,12 @@
+import { resolve } from "node:path";
 import { defineConfig, devices } from "@playwright/test";
 
+const repoRoot = resolve(import.meta.dirname, "../..");
+const webUrl = "http://127.0.0.1:5173";
+
 /**
- * E2E de la web (Fase 03). Los servidores (API + web) los arranca
- * `scripts/e2e.sh`; esta config solo define proyectos y la carpeta de tests.
+ * Playwright levanta API y web por su cuenta. Esto mantiene el comando E2E
+ * igual en Windows, macOS, Linux y CI, sin depender de Bash ni curl.
  */
 export default defineConfig({
   testDir: "./test/e2e",
@@ -11,9 +15,33 @@ export default defineConfig({
   workers: 1,
   reporter: [["list"]],
   use: {
-    baseURL: "http://127.0.0.1:5173",
+    baseURL: webUrl,
     trace: "retain-on-failure",
   },
+  webServer: [
+    {
+      command: "npm run dev:api",
+      cwd: repoRoot,
+      url: "http://127.0.0.1:4000/health/live",
+      timeout: 60_000,
+      reuseExistingServer: !process.env.CI,
+      env: {
+        NODE_ENV: "test",
+        PORT: "4000",
+        WEB_ORIGIN: webUrl,
+      },
+    },
+    {
+      command: "npm run dev:web",
+      cwd: repoRoot,
+      url: webUrl,
+      timeout: 60_000,
+      reuseExistingServer: !process.env.CI,
+      env: {
+        VITE_API_BASE_URL: "/api/v1",
+      },
+    },
+  ],
   projects: [
     {
       name: "chromium",

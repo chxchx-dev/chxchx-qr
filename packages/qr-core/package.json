@@ -4,6 +4,13 @@
   "private": true,
   "type": "module",
   "description": "Motor local de contenido y matrices QR; la API gestiona el renderizado final.",
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",

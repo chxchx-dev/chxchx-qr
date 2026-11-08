@@ -14,7 +14,9 @@ export function createApp(config: ApiConfig): Express {
   const app = express();
 
   app.disable("x-powered-by");
-  app.set("trust proxy", config.TRUST_PROXY);
+  // Cuando se habilita, confía solo en el número configurado de saltos.
+  // No usar `true` directamente: Express confiaría en todos los proxies.
+  app.set("trust proxy", config.TRUST_PROXY ? config.TRUST_PROXY_HOPS : false);
   app.use(express.json({ limit: config.REQUEST_BODY_LIMIT }));
 
   // Request ID: se acepta uno entrante o se genera; siempre se devuelve.

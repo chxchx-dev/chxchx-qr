@@ -12,18 +12,26 @@ describe("apiConfig", () => {
     expect(config.RATE_LIMIT_RENDER_PER_MINUTE).toBe(60);
     expect(config.RATE_LIMIT_PNG_PER_MINUTE).toBe(20);
     expect(config.TRUST_PROXY).toBe(false);
+    expect(config.TRUST_PROXY_HOPS).toBe(1);
   });
 
-  it("parsea entorno válido y convierte booleanos e enteros", () => {
-    const config = apiConfig({ NODE_ENV: "production", PORT: "8080", TRUST_PROXY: "true" });
+  it("parsea entorno válido, booleanos e enteros de proxy", () => {
+    const config = apiConfig({
+      NODE_ENV: "production",
+      PORT: "8080",
+      TRUST_PROXY: "true",
+      TRUST_PROXY_HOPS: "2",
+    });
     expect(config.NODE_ENV).toBe("production");
     expect(config.PORT).toBe(8080);
     expect(config.TRUST_PROXY).toBe(true);
+    expect(config.TRUST_PROXY_HOPS).toBe(2);
   });
 
   it("falla temprano con NODE_ENV, puerto o booleano inválidos", () => {
     expect(() => apiConfig({ NODE_ENV: "nope" })).toThrow(/Configuración de API inválida/);
     expect(() => apiConfig({ PORT: "70000" })).toThrow(/Configuración de API inválida/);
     expect(() => apiConfig({ TRUST_PROXY: "yes" })).toThrow(/Configuración de API inválida/);
+    expect(() => apiConfig({ TRUST_PROXY_HOPS: "0" })).toThrow(/Configuración de API inválida/);
   });
 });

@@ -74,4 +74,48 @@ describe("rate limit", () => {
     expect((await postJson(baseUrl, "/api/v1/qr/validate", body)).status).toBe(200);
     expect((await postJson(baseUrl, "/api/v1/qr/validate", body)).status).toBe(429);
   });
+
+  it("ignora X-Forwarded-For cuando no se confía en el proxy", async () => {
+    const { baseUrl } = await startTestServer({ RATE_LIMIT_VALIDATE_PER_MINUTE: "1" });
+    const body = { content: { type: "text", text: "hola" } };
+
+    expect(
+      (
+        await postJson(baseUrl, "/api/v1/qr/validate", body, {
+          "X-Forwarded-For": "198.51.100.1",
+        })
+      ).status,
+    ).toBe(200);
+    expect(
+      (
+        await postJson(baseUrl, "/api/v1/qr/validate", body, {
+          "X-Forwarded-For": "203.0.113.2",
+        })
+      ).status,
+    ).toBe(429);
+  });
+
+  it("usa el IP resuelto por Express y no el primer X-Forwarded-For", async () => {
+    const { baseUrl } = await startTestServer({
+      TRUST_PROXY: "true",
+      TRUST_PROXY_HOPS: "1",
+      RATE_LIMIT_VALIDATE_PER_MINUTE: "1",
+    });
+    const body = { content: { type: "text", text: "hola" } };
+
+    expect(
+      (
+        await postJson(baseUrl, "/api/v1/qr/validate", body, {
+          "X-Forwarded-For": "198.51.100.1, 203.0.113.7",
+        })
+      ).status,
+    ).toBe(200);
+    expect(
+      (
+        await postJson(baseUrl, "/api/v1/qr/validate", body, {
+          "X-Forwarded-For": "203.0.113.2, 203.0.113.7",
+        })
+      ).status,
+    ).toBe(429);
+  });
 });

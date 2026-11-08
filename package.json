@@ -17,6 +17,7 @@
     "dev:web": "npm run dev -w apps/web",
     "dev:api": "npm run dev -w apps/api",
     "build:packages": "npm run build -w packages/contracts -w packages/config -w packages/qr-core",
+    "pack:local": "node scripts/pack-local.mjs",
     "build": "npm run build:packages && npm run build -w apps/api && npm run build -w apps/web",
     "typecheck": "npm run build:packages && npm run typecheck --workspaces --if-present",
     "lint": "biome check .",

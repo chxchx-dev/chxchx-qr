@@ -23,6 +23,7 @@ coverage/
 
 # Generados
 *.tsbuildinfo
+artifacts/local/
 
 # Playwright (artefactos de E2E)
 apps/web/test-results/

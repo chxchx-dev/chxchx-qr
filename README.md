@@ -30,6 +30,8 @@
 
 **chxchx-qr** permite crear, validar, previsualizar y descargar códigos QR desde una aplicación web. El contenido se envía a la API que configures para generar el código; la API no guarda las solicitudes ni depende de un servicio QR externo.
 
+También puedes instalar el motor `@chxchx/qr-core` desde archivos locales en proyectos de prueba. Ejecuta `npm run pack:local` y sigue la [guía del paquete](packages/qr-core/README.md); no se publica en npm.
+
 > Los QR son estáticos: el contenido queda codificado en el propio código. Si cambia el enlace o los datos, genera y distribuye un nuevo QR.
 
 ## Qué puedes generar
@@ -135,6 +137,7 @@ Consulta el [contrato de la API](docs/API.md) para los esquemas, opciones, respu
 | --- | --- |
 | `npm run dev` | Compila paquetes compartidos e inicia la web y la API |
 | `npm run build` | Compila todos los paquetes y las aplicaciones |
+| `npm run pack:local` | Crea los paquetes locales del motor QR para proyectos de prueba |
 | `npm run typecheck` | Comprueba los tipos TypeScript |
 | `npm run lint` | Revisa código y formato con Biome |
 | `npm run format:check` | Comprueba el formato sin modificar archivos |
